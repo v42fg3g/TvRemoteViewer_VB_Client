@@ -96,6 +96,7 @@ Partial Class Form1
         '
         Me.TextBoxServerPassword.Location = New System.Drawing.Point(89, 82)
         Me.TextBoxServerPassword.Name = "TextBoxServerPassword"
+        Me.TextBoxServerPassword.PasswordChar = Global.Microsoft.VisualBasic.ChrW(42)
         Me.TextBoxServerPassword.Size = New System.Drawing.Size(100, 19)
         Me.TextBoxServerPassword.TabIndex = 12
         '
