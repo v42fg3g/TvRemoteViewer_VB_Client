@@ -59,12 +59,12 @@ Module モジュール_WEBインターフェース
         para &= "ChSpace=" & chspace.ToString & "&"
         para &= "resolution=" & resolution & "&"
         para &= "NHKMODE=" & NHKMODE.ToString & "&"
-        para &= "StreamMode=" & stream_mode.ToString
+        para &= "StreamMode=" & stream_mode.ToString & "&"
 
-        'Dim VideoFullpathFileName As String = "C:\VIDEO\test.ts"
+        Dim VideoFullpathFileName As String = VideoFilename
         ''なぜかそのまま渡すと返ってきたときに文字化けするのでURLエンコードしておく
-        'Dim VideoFullpathFileName_enc As String = System.Web.HttpUtility.UrlEncode(VideoFullpathFileName)
-        'para &= "VideoName=" & VideoFullpathFileName_enc
+        Dim VideoFullpathFileName_enc As String = System.Web.HttpUtility.UrlEncode(VideoFullpathFileName)
+        para &= "VideoName=" & VideoFullpathFileName_enc
 
         r = GET_HTML_REPLY(M_TVRV_URL & "WI_START_STREAM.html", para, "Shift_JIS")
 
@@ -108,6 +108,7 @@ Module モジュール_WEBインターフェース
         Return r
     End Function
 
+    'できあがったtsファイル数
     Public Function WI_GET_TSFILE_COUNT(ByVal num As Integer) As String
         'TvRemoteViewer_VB->WebRemocon.vb->Web_Start
         'TvRemoteViewer_VB->WebRemocon.vb->WI_GET_TSFILE_COUNT()
@@ -118,4 +119,42 @@ Module モジュール_WEBインターフェース
         Return r
     End Function
 
+    '解像度取得
+    Public Function WI_GET_RESOLUTION() As String
+        Dim r As String = ""
+        r = GET_HTML_REPLY(M_TVRV_URL & "WI_GET_RESOLUTION.html", "")
+        Return r
+    End Function
+
+    'ファイル一覧
+    Public Function WI_GET_VIDEOFILES() As String
+        Dim r As String = ""
+        r = GET_HTML_REPLY(M_TVRV_URL & "WI_GET_VIDEOFILES.html", "")
+        Return r
+    End Function
+
+    '再起動しているストリーム番号を取得
+    Public Function WI_GET_ERROR_STREAM() As String
+        '「:」区切りで返ってくる。前後に「:」
+        Dim r As String = ""
+        r = GET_HTML_REPLY(M_TVRV_URL & "WI_GET_ERROR_STREAM.html", "")
+        Return r
+    End Function
+
+    '番組表取得
+    Public Function WI_GET_PROGRAM_D() As String
+        Dim r As String = ""
+        r = GET_HTML_REPLY(M_TVRV_URL & "WI_GET_PROGRAM_D.html", "")
+        Return r
+    End Function
+    Public Function WI_GET_PROGRAM_TVROCK() As String
+        Dim r As String = ""
+        r = GET_HTML_REPLY(M_TVRV_URL & "WI_GET_PROGRAM_TVROCK.html", "")
+        Return r
+    End Function
+    Public Function WI_GET_PROGRAM_EDCB() As String
+        Dim r As String = ""
+        r = GET_HTML_REPLY(M_TVRV_URL & "WI_GET_PROGRAM_EDCB.html", "")
+        Return r
+    End Function
 End Module

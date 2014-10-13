@@ -7,3 +7,4 @@ d:\my documents\visual studio 2010\Projects\TvRemoteViewer_VB_Client\obj\x86\Rel
 d:\my documents\visual studio 2010\Projects\TvRemoteViewer_VB_Client\obj\x86\Release\TvRemoteViewer_VB_Client.exe
 d:\my documents\visual studio 2010\Projects\TvRemoteViewer_VB_Client\obj\x86\Release\TvRemoteViewer_VB_Client.xml
 d:\my documents\visual studio 2010\Projects\TvRemoteViewer_VB_Client\obj\x86\Release\TvRemoteViewer_VB_Client.pdb
+D:\My Documents\Visual Studio 2010\Projects\TvRemoteViewer_VB_Client\bin\Release\TvRemoteViewer_VB_Client.exe.config

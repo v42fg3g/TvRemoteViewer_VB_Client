@@ -1,0 +1,14 @@
+TextBoxServerIP=192.168.1.105:40003
+TextBoxServerUsername=a
+TextBoxServerPassword=b
+ComboBoxResolution=640x360
+ComboBoxNHKMODE=1
+ComboBoxNum=1
+ComboBoxBonDriver=bondriver_spinel_pt3_t0.dll
+TextBoxChSpace=0
+ComboBoxBonDriver=bondriver_spinel_pt3_t0.dll
+TextBoxChSpace=0
+ComboBoxServiceID=ÇmÇgÇjëççáÅEéRå˚ ,51200,0
+TextBoxVLCPATH=D:\TvRemoteViewer\vlc\vlc.exe
+TextBoxVLCURL=http://192.168.1.105:42465/mystream1.ts
+TextBoxSuccessSecond=3
