@@ -13,6 +13,14 @@
         'サーバーの状態
         S_server_status_str = WI_GET_TVRV_STATUS() 'サーバーの状態
         If S_server_status_str.IndexOf("接続できません") < 0 Then
+            Dim sp As Integer = S_server_status_str.IndexOf("HTTPSTREAM_App=")
+            If sp >= 0 Then
+                Dim HTTPSTREAM_App As Integer = Val(S_server_status_str.Substring(sp + "HTTPSTREAM_App=".Length))
+                If HTTPSTREAM_App <> 1 Then
+                    MsgBox("サーバー TvRemoteViewer_VB.ini内のHTTPSTREAM_Appを1に設定してくだい。")
+                    Close()
+                End If
+            End If
             '成功
             log1write("サーバーに接続しました")
             S_BonDriver_Channel_str = WI_GET_CHANNELS() 'BonDriverとチャンネル一覧を取得
