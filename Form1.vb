@@ -21,6 +21,11 @@
                     Close()
                 End If
             End If
+            Dim BS1_hlsApp As String = Instr_pickup(S_server_status_str, "BS1_hlsApp=", vbCrLf, 0)
+            If BS1_hlsApp.IndexOf("vlc.exe") < 0 Then
+                MsgBox("サーバー TvRemoteViewer_VB.ini内のBS1_hlsAppにvlc.exeへのパスを設定してくだい。")
+                Close()
+            End If
             '成功
             log1write("サーバーに接続しました")
             S_BonDriver_Channel_str = WI_GET_CHANNELS() 'BonDriverとチャンネル一覧を取得
