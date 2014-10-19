@@ -12,9 +12,7 @@
             '10000文字以上になったらカット
             log1 = log1.Substring(0, 20000)
         End If
-        If log1 <> Form1.TextBoxLog.Text Then
-            Form1.TextBoxLog.Text = log1
-        End If
+        Form1.TextBoxLog.Text = log1
         Form1.TextBoxLog.Refresh()
 
     End Sub

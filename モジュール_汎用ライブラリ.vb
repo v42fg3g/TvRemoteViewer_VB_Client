@@ -1,5 +1,5 @@
 ﻿Module モジュール_汎用ライブラリ
-     '文字列から、文字列と文字列に挟まれた文字列を抽出する。
+    '文字列から、文字列と文字列に挟まれた文字列を抽出する。
     Public Function Instr_pickup(ByRef strdat As String, ByVal findstr As String, ByVal endstr As String, ByVal startpos As Integer, Optional ByVal endpos As Integer = 2147483647) As Object
         Dim r As String = ""
 

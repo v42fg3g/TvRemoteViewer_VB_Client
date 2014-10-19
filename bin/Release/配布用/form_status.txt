@@ -11,4 +11,4 @@ TextBoxChSpace=
 ComboBoxServiceID=
 TextBoxVLCPATH=
 TextBoxVLCURL=
-TextBoxSuccessSecond=3
+TextBoxSuccessSecond=0

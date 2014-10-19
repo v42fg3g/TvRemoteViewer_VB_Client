@@ -2,7 +2,7 @@
     '================================================
     '共通で使用する変数
     '================================================
-    Public version As String = "TvRemoteViewer_VB_client v0.02"
+    Public version As String = "TvRemoteViewer_VB_client v0.05"
 
     Public TvRemoteViewer_VB_client_start As Integer = 0 '無事起動したときに１になる
 
@@ -17,4 +17,5 @@
     'サーバーの状態を記録しておく
     Public S_server_status_str As String = "" '=WI_GET_TVRV_STATUS
     Public S_BonDriver_Channel_str As String = "" '=WI_GET_CHANNELS
+    Public S_HTTPSTREAM_App As Integer = 0 '1=VLC 2=ffmpeg
 End Module

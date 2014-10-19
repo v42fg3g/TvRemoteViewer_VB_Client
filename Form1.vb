@@ -1,34 +1,175 @@
 ﻿Public Class Form1
+    '番組表表示
+    Public Sub show_TvProgram(ByVal pn As Integer)
+        '0=地デジ 998=EDCB 999=TvRock
+        Dim i As Integer
+
+        Dim s As String = ""
+        Select Case pn
+            Case 0
+                s = WI_GET_PROGRAM_D()
+            Case 998
+                s = WI_GET_PROGRAM_EDCB()
+            Case 999
+                s = WI_GET_PROGRAM_TVROCK()
+        End Select
+
+        Dim line() As String = Split(s, vbCrLf)
+
+        DataGridView1.Rows.Clear()
+        Dim cnt As Integer = 0
+        For i = 0 To line.Length - 1
+            Dim d() As String = line(i).Split(",")
+            If d.Length = 8 Then
+                DataGridView1.Rows.Add(1)
+                DataGridView1.Rows(cnt).Cells(0).Value = d(0) & "　　　　　　　" & d(4) & " ～ " & d(5) & vbCrLf & d(6) & vbCrLf & "　" & d(7)
+                DataGridView1.Rows(cnt).Cells(1).Value = d(2) & "," & d(3) 'サービスID,ChSpace
+                cnt += 1
+            End If
+        Next
+
+        Select Case pn
+            Case 0
+                log1write("地デジ番組表を更新しました")
+            Case 998
+                log1write("EDCB番組表を更新しました")
+            Case 999
+                log1write("TvRock番組表を更新しました")
+        End Select
+
+        DataGridView1.BringToFront()
+    End Sub
+
+    'DataGridView1の手動描画
+    Private Sub DataGridView1_CellPainting(sender As Object, e As System.Windows.Forms.DataGridViewCellPaintingEventArgs) Handles DataGridView1.CellPainting
+        If e.ColumnIndex >= 0 AndAlso e.RowIndex >= 0 AndAlso _
+            (e.PaintParts And DataGridViewPaintParts.Background) = _
+                DataGridViewPaintParts.Background Then
+
+            '選択されているか調べ、色を決定する
+            'bColor1が開始色、bColor2が終了色
+            Dim bColor1, bColor2 As Color
+            If (e.PaintParts And DataGridViewPaintParts.SelectionBackground) = _
+                    DataGridViewPaintParts.SelectionBackground AndAlso _
+                (e.State And DataGridViewElementStates.Selected) = _
+                    DataGridViewElementStates.Selected Then
+                bColor1 = Color.LemonChiffon 'e.CellStyle.SelectionBackColor
+                bColor2 = Color.White 'Color.Black
+            Else
+                If e.RowIndex Mod 2 = 1 Then
+                    bColor1 = Color.FromArgb(&HF0, &HF0, &HF0) 'e.CellStyle.BackColor
+                    bColor2 = Color.FromArgb(&HFF, &HFF, &HFF)
+                Else
+                    bColor1 = Color.FromArgb(&HFF, &HFF, &HFF) 'e.CellStyle.BackColor
+                    bColor2 = Color.FromArgb(&HFF, &HFF, &HFF)
+                End If
+            End If
+
+            'グラデーションブラシを作成
+            Dim b As New System.Drawing.Drawing2D.LinearGradientBrush( _
+                e.CellBounds, bColor1, bColor2, _
+                System.Drawing.Drawing2D.LinearGradientMode.Horizontal)
+            Try
+                'セルを塗りつぶす
+                e.Graphics.FillRectangle(b, e.CellBounds)
+            Finally
+                b.Dispose()
+            End Try
+
+            '背景以外が描画されるようにする
+            'Dim paintParts As DataGridViewPaintParts = e.PaintParts And Not DataGridViewPaintParts.Background
+            'セルを描画する
+            'e.Paint(e.ClipBounds, paintParts)
+        End If
+
+        Try
+            Dim s As String = DataGridView1.Rows(e.RowIndex).Cells(e.ColumnIndex).Value
+            Dim sp1 As Integer
+            Dim sp2 As Integer
+
+            sp1 = s.IndexOf(vbCrLf) '1つめの改行
+            sp2 = s.IndexOf(vbCrLf, sp1 + 2) '2つめの改行
+
+            Dim g = e.Graphics
+            Dim sf As New StringFormat()
+            sf.SetMeasurableCharacterRanges({New CharacterRange(0, sp1 + 2),
+                                             New CharacterRange(sp1 + 2, sp2 - sp1),
+                                             New CharacterRange(sp2 + 2, s.Length - sp2 - 2)})
+
+            'e.CellStyle.Font
+            Dim Font1 As Font = New Font("MS UI Gothic", 10)
+            Dim Font2 As Font = New Font("MS UI Gothic", 10, FontStyle.Bold)
+            Dim Font3 As Font = New Font("MS UI Gothic", 9)
+            Dim Font_dummy As Font = New Font("MS UI Gothic", 12)
+
+            'Dim rgs = g.MeasureCharacterRanges(s, e.CellStyle.Font, e.CellBounds, sf)
+            Dim rgs = g.MeasureCharacterRanges(s, Font_dummy, e.CellBounds, sf)
+
+            g.DrawString(s.Substring(0, sp1 + 2), Font1, Brushes.Black, rgs(0).GetBounds(g).Location)
+            g.DrawString(s.Substring(sp1 + 2, sp2 - sp1), Font2, Brushes.Black, rgs(1).GetBounds(g).Location)
+            g.DrawString(s.Substring(sp2 + 2, s.Length - sp2 - 2), Font3, Brushes.Gray, rgs(2).GetBounds(g).Location)
+            e.Handled = True
+
+        Catch ex As Exception
+        End Try
+
+        '描画が完了したことを知らせる
+        e.Handled = True
+
+    End Sub
 
     Private Sub Form1_Load(sender As System.Object, e As System.EventArgs) Handles MyBase.Load
-
+        'DataGridView1
+        DataGridView1.RowTemplate.Height = 70
     End Sub
 
     Private Sub Form1_Shown(sender As System.Object, e As System.EventArgs) Handles MyBase.Shown
         log1write(version)
+
+        '初期設定読み込み
+        read_ini()
 
         'フォーム項目を復元
         F_window_set()
 
         'サーバーの状態
         S_server_status_str = WI_GET_TVRV_STATUS() 'サーバーの状態
-        If S_server_status_str.IndexOf("接続できません") < 0 Then
+
+        If S_server_status_str.IndexOf("接続できません") > 0 Then
+            '失敗
+            TabControl1.SelectedIndex = 5
+            TextBoxServerIP.Focus()
+            log1write("サーバーと接続できません。サーバーの起動を確認し、サーバーIPを設定して再起動してください")
+            MsgBox("サーバーと接続できません。サーバーの起動を確認し、サーバーIPを設定して再起動してください")
+        ElseIf S_server_status_str.IndexOf("許可されていません") > 0 Then
+            '失敗
+            TabControl1.SelectedIndex = 5
+            TextBoxServerUsername.Focus()
+            log1write("サーバーから認証を求められました。IDとPASSWORDを設定してください")
+            MsgBox("サーバーから認証を求められました。IDとPASSWORDを設定してください")
+        Else
             Dim sp As Integer = S_server_status_str.IndexOf("HTTPSTREAM_App=")
             If sp >= 0 Then
-                Dim HTTPSTREAM_App As Integer = Val(S_server_status_str.Substring(sp + "HTTPSTREAM_App=".Length))
-                If HTTPSTREAM_App <> 1 Then
-                    MsgBox("サーバー TvRemoteViewer_VB.ini内のHTTPSTREAM_Appを1に設定してくだい。")
-                    Close()
-                End If
+                S_HTTPSTREAM_App = Val(S_server_status_str.Substring(sp + "HTTPSTREAM_App=".Length))
+                'If HTTPSTREAM_App <> 1 Then
+                'MsgBox("サーバー TvRemoteViewer_VB.ini内のHTTPSTREAM_Appを1に設定してくだい。")
+                'Close()
+                'End If
             End If
             Dim BS1_hlsApp As String = Instr_pickup(S_server_status_str, "BS1_hlsApp=", vbCrLf, 0)
-            If BS1_hlsApp.IndexOf("vlc.exe") < 0 Then
+            If S_HTTPSTREAM_App = 1 And BS1_hlsApp.IndexOf("vlc.exe") < 0 Then
                 MsgBox("サーバー TvRemoteViewer_VB.ini内のBS1_hlsAppにvlc.exeへのパスを設定してくだい。")
                 Close()
             End If
+            If S_HTTPSTREAM_App = 0 Then
+                MsgBox("サーバー TvRemoteViewer_VB.ini内のHTTPSTREAM_Appを1か2に設定してくだい。")
+                Close()
+            End If
+
             '成功
             log1write("サーバーに接続しました")
             S_BonDriver_Channel_str = WI_GET_CHANNELS() 'BonDriverとチャンネル一覧を取得
+
             'フォーム上の項目をセット
             search_BonDriver() 'BonDriverをセット
             search_ServiceID() 'サービスIDをセット
@@ -36,14 +177,28 @@
             set_resolution() '解像度をセット
             set_videofiles() 'ファイル一覧をセット
             show_LabelStream() '現在稼働中のプロセスを表示
-        Else
-            Debug.Print("[" & S_server_status_str & "]")
-            '失敗
-            log1write("サーバーと接続できません。サーバーIPを設定して再起動してください")
+            make_vlcURL() 'ローカルVLCに渡すURLをセット
+
+            If file_exist(TextBoxVLCPATH.Text.ToString) = 0 Then
+                log1write("プレーヤーの指定が不正です")
+                MsgBox("プレーヤーの指定が不正です")
+                TabControl1.SelectedIndex = 5
+                TextBoxVLCPATH.Focus()
+            End If
         End If
 
         '無事に起動した
         TvRemoteViewer_VB_client_start = 1
+
+        Select Case TabControl1.SelectedIndex
+            Case 0
+                show_TvProgram(0)
+            Case 1
+                show_TvProgram(998)
+            Case 2
+                show_TvProgram(999)
+        End Select
+
         Timer1.Enabled = True
     End Sub
 
@@ -62,6 +217,55 @@
         If TvRemoteViewer_VB_client_start = 1 Then
             save_form_status()
         End If
+    End Sub
+
+    'ファイル再生用パスを読み込む
+    Public Sub read_ini()
+        Dim errstr As String = ""
+        Dim line() As String = Nothing
+
+        'カレントディレクトリ変更
+        F_set_ppath4program()
+
+        line = file2line("TvRemoteViewer_VB_client.ini")
+        log1write("設定ファイルとして TvRemoteViewer_VB_client.ini を読み込みました")
+
+        Dim i, j As Integer
+
+        If line Is Nothing Then
+        ElseIf line.Length > 0 Then
+            '読み込み完了
+            For i = 0 To line.Length - 1
+                line(i) = trim8(line(i))
+                'コメント削除
+                If line(i).IndexOf(";") >= 0 Then
+                    line(i) = line(i).Substring(0, line(i).IndexOf(";"))
+                End If
+                If line(i).IndexOf("#") >= 0 Then
+                    line(i) = line(i).Substring(0, line(i).IndexOf("#"))
+                End If
+                Dim youso() As String = line(i).Split("=")
+                Try
+                    If youso Is Nothing Then
+                    ElseIf youso.Length > 1 Then
+                        For j = 0 To youso.Length - 1
+                            youso(j) = trim8(youso(j))
+                        Next
+                        Select Case youso(0)
+                            Case "TvProgramD_BonDriver1st"
+                                TvProgramD_BonDriver1st = trim8(youso(1).ToString)
+                            Case "TvProgramS_BonDriver1st"
+                                TvProgramS_BonDriver1st = trim8(youso(1).ToString)
+                        End Select
+                    End If
+                Catch ex As Exception
+                    log1write("パラメーター " & youso(0) & " の読み込みに失敗しました。" & ex.Message)
+                End Try
+            Next
+        Else
+            log1write("設定ファイル TvRemoteViewer_VB_client.ini の読み込みに失敗しました")
+        End If
+
     End Sub
 
     '=========================================================================
@@ -94,6 +298,43 @@
             End If
         Next
 
+        '一時表示していたtextboxlogを消す
+        textboxlog_temp_do()
+
+        '番組表を表示中ならば1分毎に更新
+        If TabControl1.SelectedIndex <= 2 Then
+            If Second(Now()) = 2 Then 'X分02秒ならば
+                Try
+                    '選択されているセルを記憶
+                    Dim slctd As Integer = -1
+                    For Each c As DataGridViewCell In DataGridView1.SelectedCells
+                        slctd = c.RowIndex
+                        Exit For
+                    Next c
+                    'スクロールバーの位置を記憶
+                    Dim scrb As Integer = DataGridView1.FirstDisplayedScrollingRowIndex
+                    Select Case TabControl1.SelectedIndex
+                        Case 0
+                            show_TvProgram(0)
+                        Case 1
+                            show_TvProgram(998)
+                        Case 2
+                            show_TvProgram(999)
+                    End Select
+                    If slctd > 0 Then
+                        '選択解除して戻す
+                        DataGridView1.ClearSelection()
+                        DataGridView1(0, slctd).Selected = True
+                    End If
+                    'スクロールバーの位置を戻す
+                    DataGridView1.FirstDisplayedScrollingRowIndex = scrb
+                Catch ex As Exception
+                    '更新した結果　番組表がなくなった
+                    log1write("番組表更新に失敗しました")
+                End Try
+            End If
+        End If
+
         'ログ処理 'モジュール_ログでその都度更新することにした
         'If log1.Length > 20000 Then
         ''10000文字以上になったらカット
@@ -104,6 +345,34 @@
         'End If
         'Refresh()
         'TextBoxLog.Refresh()
+    End Sub
+
+    Public Sub textboxlog_temp_do()
+        '一時表示していたtextboxlogを消す
+        If textboxlog_temp > 0 Then
+            textboxlog_temp -= 1
+            If textboxlog_temp = 0 Then
+                '終了秒数になった
+                TextBoxLog.Width = textboxlog_temp_width
+                TextBoxLog.Left = textboxlog_temp_left
+                If TabControl1.SelectedIndex <= 2 Then
+                    DataGridView1.BringToFront()
+                Else
+                    TextBoxLog.BringToFront()
+                End If
+            Else
+                If textboxlog_temp_stratstop = 0 Then
+                    '起動中なら状況を表示
+                    Dim error_numbers As String = WI_GET_ERROR_STREAM()
+                    If error_numbers.IndexOf(":" & ComboBoxNum.Text.ToString & ":") < 0 Then
+                        '成功している
+                        log1write("成功")
+                    Else
+                        log1write("再起動中")
+                    End If
+                End If
+            End If
+        End If
     End Sub
 
     'VLCのcrashダイアログが表示されていれば消す
@@ -130,6 +399,7 @@
     Private Sub search_BonDriver()
         ComboBoxBonDriver.Items.Clear()
         Dim html As String = S_BonDriver_Channel_str
+        ComboBoxBonDriver.Items.Add("---")
 
         Dim sp As Integer = html.IndexOf("[bondriver")
         While sp >= 0
@@ -152,6 +422,7 @@
             For i = 0 To line.Length - 1
                 Dim lr() As String = line(i).Split("=")
                 If lr.Length = 2 Then
+                    lr(1) = Trim(lr(1))
                     Select Case trim8(lr(0))
                         Case "TextBoxServerIP"
                             TextBoxServerIP.Text = lr(1)
@@ -169,10 +440,6 @@
                             ComboBoxBonDriver.Text = lr(1)
                         Case "TextBoxChSpace"
                             TextBoxChSpace.Text = lr(1)
-                        Case "ComboBoxBonDriver"
-                            ComboBoxBonDriver.Text = lr(1)
-                        Case "TextBoxChSpace"
-                            TextBoxChSpace.Text = lr(1)
                         Case "ComboBoxServiceID"
                             ComboBoxServiceID.Text = lr(1)
                         Case "TextBoxVLCPATH"
@@ -181,6 +448,21 @@
                             TextBoxVLCURL.Text = lr(1)
                         Case "TextBoxSuccessSecond"
                             TextBoxSuccessSecond.Text = lr(1)
+                        Case "TabControl1_SelectedIndex"
+                            TabControl1.SelectedIndex = Val(lr(1))
+                        Case "window_location"
+                            'ウィンドウの位置復元
+                            Dim h As IntPtr
+                            Dim w() As String = trim8(lr(1)).Split(",")
+                            If w.Length = 4 Then
+                                h = FindWindow(vbNullString, "TvRemoteViewer_VB_Client")
+                                If h <> 0 Then
+                                    Try
+                                        MoveWindow(h, trim8(w(0)), trim8(w(1)), trim8(w(2)), trim8(w(3)), 1)
+                                    Catch ex As Exception
+                                    End Try
+                                End If
+                            End If
                     End Select
                 End If
             Next
@@ -191,6 +473,19 @@
     Private Sub save_form_status()
         Dim s As String = ""
 
+        'ウィンドウの位置、大きさを記録
+        Dim h As IntPtr
+        Dim w As RECT
+        h = FindWindow(vbNullString, "TvRemoteViewer_VB_Client")
+        If h <> 0 Then
+            If GetWindowRect(h, w) = 1 Then
+                's = "window_location = " & w.Left & "," & w.Top & "," & (w.Right - w.Left + 1) & "," & (w.Bottom - w.Top + 1) & vbCrLf
+                '↑のままだと幅と高さが１ずつ増えてしまう
+                s = "window_location = " & w.Left & "," & w.Top & "," & (w.Right - w.Left) & "," & (w.Bottom - w.Top) & vbCrLf
+            End If
+        End If
+
+        'フォーム　コントロール
         s &= "TextBoxServerIP=" & TextBoxServerIP.Text & vbCrLf
         s &= "TextBoxServerUsername=" & TextBoxServerUsername.Text & vbCrLf
         s &= "TextBoxServerPassword=" & TextBoxServerPassword.Text & vbCrLf
@@ -199,12 +494,11 @@
         s &= "ComboBoxNum=" & ComboBoxNum.Text & vbCrLf
         s &= "ComboBoxBonDriver=" & ComboBoxBonDriver.Text & vbCrLf
         s &= "TextBoxChSpace=" & TextBoxChSpace.Text & vbCrLf
-        s &= "ComboBoxBonDriver=" & ComboBoxBonDriver.Text & vbCrLf
-        s &= "TextBoxChSpace=" & TextBoxChSpace.Text & vbCrLf
         s &= "ComboBoxServiceID=" & ComboBoxServiceID.Text & vbCrLf
         s &= "TextBoxVLCPATH=" & TextBoxVLCPATH.Text & vbCrLf
         s &= "TextBoxVLCURL=" & TextBoxVLCURL.Text & vbCrLf
         s &= "TextBoxSuccessSecond=" & TextBoxSuccessSecond.Text & vbCrLf
+        s &= "TabControl1_SelectedIndex=" & TabControl1.SelectedIndex & vbCrLf
 
         'カレントディレクトリ変更
         F_set_ppath4program()
@@ -222,7 +516,7 @@
             Dim value As String = Instr_pickup(html, "<option value=""", """>", sp)
             Dim name As String = Instr_pickup(html, """>", "</option>", sp)
 
-            ComboBoxVideo.Items.Add(name & Space(100) & ":" & value)
+            ComboBoxVideo.Items.Add(name & Space(120) & ":" & value)
 
             sp = html.IndexOf("<option value=""", sp + 1)
         End While
@@ -277,7 +571,8 @@
 
     '配信中を更新
     Public Sub show_LabelStream()
-        Dim r As String = "配信中："
+        Dim r As String = ""
+        Dim chk As Integer = 0
         Dim response As String = WI_GET_LIVE_STREAM()
         Dim d() As String = Split(response, vbCrLf)
         Dim i As Integer = 0
@@ -285,10 +580,18 @@
             For i = 0 To d.Length - 1
                 Dim youso() As String = d(i).Split(",")
                 Try
-                    r &= youso(1) & " "
+                    If youso.Length > 3 Then
+                        r &= youso(1) & " "
+                        chk += 1
+                    End If
                 Catch ex As Exception
                 End Try
             Next
+        End If
+        If chk = 0 Then
+            r = "待機中"
+        Else
+            r = "配信中：" & r
         End If
         LabelStream.Text = r
     End Sub
@@ -297,35 +600,50 @@
     'フォーム上のボタン、テキスト、コンボボックス等が操作されたとき
     '=========================================================================
 
-    '配信スタート
+    '手動配信スタート
     Private Sub ButtonStart_Click(sender As System.Object, e As System.EventArgs) Handles ButtonStart.Click
+        Start_Stream(0)
+    End Sub
+
+    'ファイル配信スタート
+    Private Sub ButtonStart_file_Click(sender As System.Object, e As System.EventArgs) Handles ButtonStart_file.Click
+        Start_Stream(1)
+    End Sub
+
+    Private Sub Start_Stream(ByVal HandFile As Integer, Optional ByVal bondriver As String = "", Optional ByVal sid As Integer = 0, Optional ByVal chspace As Integer = 0)
         'StreamMode 0=HLS再生 1=HLSファイル再生 2=HTTPストリーム再生　3=HTTPストリームファイル再生
         Dim response As String = ""
 
         Dim num As Integer = Val(ComboBoxNum.Text)
 
         '既存のVLCを停止する
-        stop_stream(num)
+        stop_vlc(num)
 
-        If ComboBoxVideo.Text.IndexOf("---") = 0 Or ComboBoxVideo.Text.ToString.Length = 0 Then
+        If HandFile = 0 Then
             'テレビ視聴
-            Dim StremMode As Integer = 2
-            Dim s() As String = ComboBoxServiceID.Text.Split(",")
-            If s.Length = 3 Then
-                response = WI_START_STREAM( _
-                                    num.ToString, _
-                                    ComboBoxBonDriver.Text.ToString, _
-                                    Val(s(1)), _
-                                    Val(TextBoxChSpace.Text), _
-                                    ComboBoxResolution.Text, _
-                                    Val(ComboBoxNHKMODE.Text), _
-                                    StremMode, _
-                                    "" _
-                                    )
+            If ComboBoxBonDriver.Text.IndexOf("---") < 0 Then
+                Dim StremMode As Integer = 2
+                Dim s() As String = ComboBoxServiceID.Text.Split(",")
+                If s.Length = 3 Then
+                    response = WI_START_STREAM( _
+                                        num.ToString, _
+                                        ComboBoxBonDriver.Text.ToString, _
+                                        Val(s(1)), _
+                                        Val(TextBoxChSpace.Text), _
+                                        ComboBoxResolution.Text, _
+                                        Val(ComboBoxNHKMODE.Text), _
+                                        StremMode, _
+                                        "" _
+                                        )
+                Else
+                    log1write("サービスIDが不正です")
+                    Exit Sub
+                End If
             Else
-                log1write("サービスIDが不正です")
+                log1write("BonDriverが指定されていません")
+                Exit Sub
             End If
-        Else
+        ElseIf HandFile = 1 Then
             'ファイル再生
             Dim d() As String = ComboBoxVideo.Text.ToString.Split(",")
             If d.Length = 2 Then
@@ -345,7 +663,21 @@
                 End If
             Else
                 log1write("ファイル指定が不正です")
+                Exit Sub
             End If
+        ElseIf HandFile = 2 Then
+            '番組表から
+            Dim StremMode As Integer = 2
+            response = WI_START_STREAM( _
+                                    num.ToString, _
+                                    bondriver, _
+                                    sid, _
+                                    chspace, _
+                                    ComboBoxResolution.Text, _
+                                    Val(ComboBoxNHKMODE.Text), _
+                                    StremMode, _
+                                    "" _
+                                    )
         End If
 
         log1write("=============================================")
@@ -389,16 +721,33 @@
 
         '稼働中ナンバー
         show_LabelStream() '現在稼働中のプロセスを表示
+
     End Sub
 
-    '配信停止ボタン
+    '手動配信停止ボタン
     Private Sub ButtonStop_Click(sender As System.Object, e As System.EventArgs) Handles ButtonStop.Click
+        Dim num As Integer = Val(ComboBoxNum.Text)
+        stop_stream(num)
+    End Sub
+
+    'ファイル配信停止ボタン
+    Private Sub ButtonStop_file_Click(sender As System.Object, e As System.EventArgs) Handles ButtonStop_file.Click
         Dim num As Integer = Val(ComboBoxNum.Text)
         stop_stream(num)
     End Sub
 
     'ストリームを停止する
     Public Sub stop_stream(ByVal num As Integer)
+        If textboxlog_temp = 0 Then
+            textboxlog_temp_left = TextBoxLog.Left
+            textboxlog_temp_width = TextBoxLog.Width
+            TextBoxLog.Left = Int(TextBoxLog.Width / 2)
+            TextBoxLog.Width = Int(TextBoxLog.Width / 2) - 6
+        End If
+        TextBoxLog.BringToFront()
+        textboxlog_temp = textboxlog_temp_howlong 'ログ表示秒数
+        textboxlog_temp_stratstop = 1
+
         'VLCを閉じる
         stop_vlc(num)
         'サーバーに停止信号を送る
@@ -412,7 +761,7 @@
     Private Sub stop_vlc(ByVal num As Integer)
         Try
             Dim ps As System.Diagnostics.Process = System.Diagnostics.Process.GetProcessById(player_proc(num))
-            ps.Kill()
+            ps.CloseMainWindow()
         Catch ex As Exception
         End Try
     End Sub
@@ -456,7 +805,7 @@
     'VLCで視聴
     Private Sub view_by_VLC(ByVal num As Integer)
         Dim vlc_path As String = TextBoxVLCPATH.Text.ToString
-        Dim vlc_url As String = TextBoxVLCURL.Text.ToString
+        Dim vlc_url As String = TextBoxVLCURL.Text.ToString()
 
         'パスワードがあればVLC_URLに追加
         vlc_url = add_userpass2url(vlc_url, M_username, M_password)
@@ -546,21 +895,26 @@
         If ComboBoxVideo.Text.ToString.Length = 0 Then
             ComboBoxVideo.Text = ComboBoxVideo.Items(0)
         End If
-        If ComboBoxVideo.Text = ComboBoxVideo.Items(0) Then
-            ComboBoxBonDriver.Enabled = True
-            ComboBoxServiceID.Enabled = True
-            'ComboBoxNHKMODE.Enabled = True
-            TextBoxChSpace.Enabled = True
-        Else
-            ComboBoxBonDriver.Enabled = False
-            ComboBoxServiceID.Enabled = False
-            'ComboBoxNHKMODE.Enabled = False
-            TextBoxChSpace.Enabled = False
-        End If
+        'If ComboBoxVideo.Text = ComboBoxVideo.Items(0) Then
+        'ComboBoxBonDriver.Enabled = True
+        'ComboBoxServiceID.Enabled = True
+        ''ComboBoxNHKMODE.Enabled = True
+        'TextBoxChSpace.Enabled = True
+        'Else
+        'ComboBoxBonDriver.Enabled = False
+        'ComboBoxServiceID.Enabled = False
+        ''ComboBoxNHKMODE.Enabled = False
+        'TextBoxChSpace.Enabled = False
+        'End If
     End Sub
 
     '配信ナンバー選択
     Private Sub ComboBoxNum_SelectedIndexChanged(sender As System.Object, e As System.EventArgs) Handles ComboBoxNum.SelectedIndexChanged
+        make_vlcURL()
+    End Sub
+
+    'ローカル再生用　VLCに渡すURLをTextBoxVLCURLにセット
+    Private Sub make_vlcURL()
         If Val(ComboBoxNum.Text.ToString) >= 30 Then
             ComboBoxNum.Text = 29
         End If
@@ -573,7 +927,11 @@
             '末尾が/なら取り除く
             Dim sp As Integer = server.LastIndexOf("/")
             If sp = server.Length - 1 Then
-                server = server.Substring(0, server.Length - 1)
+                Try
+                    server = server.Substring(0, server.Length - 1)
+                Catch ex As Exception
+                    server = ""
+                End Try
             End If
             'URL
             Dim protcol As String = "http"
@@ -596,18 +954,33 @@
             End If
             'ポート
             Dim port As Integer = 0
-            sp = S_server_status_str.IndexOf("HTTPSTREAM_VLC_port=")
-            If sp >= 0 Then
-                port = Val(S_server_status_str.Substring(sp + "HTTPSTREAM_VLC_port=".Length))
-            Else
-                port = 42465 'デフォルト
-            End If
-            port = port + Val(ComboBoxNum.Text.ToString) - 1
-            '最後に合成
-            Dim num2 As String = Val(ComboBoxNum.Text.ToString).ToString
-            TextBoxVLCURL.Text = protcol & "://" & server & ":" & port.ToString & "/mystream" & num2 & ".ts"
+            Select Case S_HTTPSTREAM_App
+                Case 1
+                    'VLC配信
+                    sp = S_server_status_str.IndexOf("HTTPSTREAM_VLC_port=")
+                    If sp >= 0 Then
+                        port = Val(S_server_status_str.Substring(sp + "HTTPSTREAM_VLC_port=".Length))
+                    Else
+                        port = 42465 'デフォルト
+                    End If
+                    port = port + Val(ComboBoxNum.Text.ToString) - 1
+                    '最後に合成
+                    Dim num2 As String = Val(ComboBoxNum.Text.ToString).ToString
+                    TextBoxVLCURL.Text = protcol & "://" & server & ":" & port.ToString & "/mystream" & num2 & ".ts"
+                Case 2
+                    'ffmpeg配信
+                    'VLC配信
+                    sp = S_server_status_str.IndexOf("_wwwport=")
+                    If sp >= 0 Then
+                        port = Val(S_server_status_str.Substring(sp + "_wwwport=".Length))
+                    Else
+                        port = 40003 'デフォルト
+                    End If
+                    '最後に合成
+                    Dim num2 As String = Val(ComboBoxNum.Text.ToString).ToString
+                    TextBoxVLCURL.Text = protcol & "://" & server & ":" & port.ToString & "/WatchTV" & num2 & ".ts"
+            End Select
         End If
-
     End Sub
 
     'ローカルVLC選択
@@ -734,4 +1107,159 @@
         log1write(WI_GET_ERROR_STREAM())
     End Sub
 
+    'タブ 番組表　地デジ
+    Private Sub TabPage1_Enter(sender As System.Object, e As System.EventArgs) Handles TabPage1.Enter
+        If TvRemoteViewer_VB_client_start = 1 Then
+            show_TvProgram(0)
+        End If
+    End Sub
+
+    'タブ 番組表　EDCB
+    Private Sub TabPage2_Enter(sender As System.Object, e As System.EventArgs) Handles TabPage2.Enter
+        If TvRemoteViewer_VB_client_start = 1 Then
+            show_TvProgram(998)
+        End If
+    End Sub
+
+    'タブ 番組表　TvRock
+    Private Sub TabPage3_Enter(sender As System.Object, e As System.EventArgs) Handles TabPage3.Enter
+        If TvRemoteViewer_VB_client_start = 1 Then
+            show_TvProgram(999)
+        End If
+    End Sub
+
+    'タブ ファイル再生
+    Private Sub TabPage4_Enter(sender As System.Object, e As System.EventArgs) Handles TabPage4.Enter
+        textboxlog_bringtofront()
+    End Sub
+
+    'タブ 手動再生
+    Private Sub TabPage5_Enter(sender As System.Object, e As System.EventArgs) Handles TabPage5.Enter
+        textboxlog_bringtofront()
+    End Sub
+
+    'タブ 設定
+    Private Sub TabPage6_Enter(sender As System.Object, e As System.EventArgs) Handles TabPage6.Enter
+        textboxlog_bringtofront()
+    End Sub
+
+    'タブ　サーバー
+    Private Sub TabPage7_Enter(sender As System.Object, e As System.EventArgs) Handles TabPage7.Enter
+        textboxlog_bringtofront()
+    End Sub
+
+    'タブ　番組表以外を押された場合にログを最前面に
+    Private Sub textboxlog_bringtofront()
+        If textboxlog_temp > 0 Then
+            textboxlog_temp = 1 'すぐ0になる
+            textboxlog_temp_do()
+        End If
+        TabControl1.BringToFront()
+        TextBoxLog.BringToFront()
+    End Sub
+
+    'リサイズ
+    Private Sub Form1_Resize(sender As System.Object, e As System.EventArgs) Handles MyBase.Resize
+        'タブコントロール
+        TabControl1.Width = Me.Width
+        TabControl1.Height = Me.Height - 24 - 40
+        '番組表
+        DataGridView1.Left = TabControl1.Location.X
+        DataGridView1.Top = TabControl1.Location.Y + TabControl1.ItemSize.Height + 2
+        DataGridView1.Width = TabControl1.Width - 20
+        DataGridView1.Height = TabControl1.Height - TabControl1.ItemSize.Height - 2
+        DataGridView1.Columns(0).Width = DataGridView1.Width
+        'ログ
+        TextBoxLog.Height = Int(Me.Height / 2.5)
+        If TextBoxLog.Height > 300 Then
+            TextBoxLog.Height = 300
+        End If
+        TextBoxLog.Left = TabControl1.Location.X + 4
+        TextBoxLog.Top = TabControl1.Location.Y + TabControl1.Height - TextBoxLog.Height
+        TextBoxLog.Width = TabControl1.Width - 8
+    End Sub
+
+    '配信可能かどうか .stoppingの状態を返す
+    Private Function CanStartMovie(ByVal num As Integer) As Integer
+        '可能ならば0が返る
+        Dim r As Integer = 0
+        '再起動中かどうか
+        'Dim error_numbers As String = WI_GET_ERROR_STREAM()
+        'If error_numbers.IndexOf(":" & ComboBoxNum.Text.ToString & ":") >= 0 Then
+        ''再起動中
+        'r = 8
+        'Else
+        '起動中なら状況を表示
+        Dim s2 As String = WI_GET_LIVE_STREAM() 'stopping=7個目
+        Dim line() As String = Split(s2, vbCrLf)
+        For i As Integer = 0 To line.Length - 1
+            Dim d() As String = line(i).Split(",")
+            If d.Length >= 8 Then
+                If d(1) = num Then
+                    r = d(8) 'stopping
+                    Exit For
+                End If
+            End If
+        Next
+        'End If
+
+        Return r
+    End Function
+
+    Private Sub DataGridView1_DoubleClick(sender As System.Object, e As System.EventArgs) Handles DataGridView1.DoubleClick
+        '配信開始
+        '■まず配信可能かどうか調べる
+        Dim num As Integer = Val(ComboBoxNum.Text.ToString)
+        Dim csm As Integer = CanStartMovie(num)
+        If csm = 0 Then
+            If textboxlog_temp = 0 Then
+                textboxlog_temp_left = TextBoxLog.Left
+                textboxlog_temp_width = TextBoxLog.Width
+                TextBoxLog.Left = Int(TextBoxLog.Width / 2)
+                TextBoxLog.Width = Int(TextBoxLog.Width / 2) - 6
+            End If
+            TextBoxLog.BringToFront()
+            textboxlog_temp_stratstop = 0
+            textboxlog_temp = textboxlog_temp_howlong 'ログ表示秒数
+
+            For Each c As DataGridViewCell In DataGridView1.SelectedCells
+                Dim bondriver As String = ComboBoxBonDriver.Text
+                Dim s As String = DataGridView1.Rows(c.RowIndex).Cells(1).Value
+                Dim d() As String = s.Split(",")
+                If d.Length = 2 Then
+                    '優先指定があればそれに切り替える
+                    If Val(d(1)) = 1 Or Val(d(0)) < 1024 Then
+                        If TvProgramS_BonDriver1st.Length > 0 Then
+                            bondriver = TvProgramS_BonDriver1st
+                        End If
+                    Else
+                        '地デジ
+                        If TvProgramD_BonDriver1st.Length > 0 Then
+                            bondriver = TvProgramD_BonDriver1st
+                        End If
+                    End If
+                    If bondriver.Length > 0 Or bondriver.IndexOf("---") < 0 Then
+                        log1write(bondriver & "を使用します")
+                        Start_Stream(2, bondriver, Val(d(0)), Val(d(1)))
+                    Else
+                        log1write("BonDriverを選択してください")
+                    End If
+                End If
+                Exit For '複数選択には対応せず
+            Next c
+        Else
+            log1write("サーバー側の配信準備ができていません stopping=" & csm)
+        End If
+    End Sub
+
+    '使用できない番組表を選択できなくする
+    Private Sub TabControl1_Selecting(sender As System.Object, e As System.Windows.Forms.TabControlCancelEventArgs) Handles TabControl1.Selecting
+        If e.TabPageIndex = 0 And S_server_status_str.Length < 100 Then
+            e.Cancel = True
+        ElseIf e.TabPageIndex = 1 And Instr_pickup(S_server_status_str, "TvProgram_EDCB_url=", vbCrLf, 0).length = 0 Then
+            e.Cancel = True
+        ElseIf e.TabPageIndex = 2 And Instr_pickup(S_server_status_str, "TvProgram_tvrock_url=", vbCrLf, 0).length = 0 Then
+            e.Cancel = True
+        End If
+    End Sub
 End Class
