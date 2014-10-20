@@ -135,18 +135,24 @@
         'サーバーの状態
         S_server_status_str = WI_GET_TVRV_STATUS() 'サーバーの状態
 
-        If S_server_status_str.IndexOf("接続できません") > 0 Then
+        If S_server_status_str.IndexOf("接続できません") > 0 Or S_server_status_str.IndexOf("形式を決定できませんでした") > 0 Then
             '失敗
             TabControl1.SelectedIndex = 5
             TextBoxServerIP.Focus()
-            log1write("サーバーと接続できません。サーバーの起動を確認し、サーバーIPを設定して再起動してください")
+            log1write("【警告】サーバーと接続できません。サーバーの起動を確認し、サーバーIPを設定して再起動してください")
             MsgBox("サーバーと接続できません。サーバーの起動を確認し、サーバーIPを設定して再起動してください")
         ElseIf S_server_status_str.IndexOf("許可されていません") > 0 Then
             '失敗
             TabControl1.SelectedIndex = 5
             TextBoxServerUsername.Focus()
-            log1write("サーバーから認証を求められました。IDとPASSWORDを設定してください")
-            MsgBox("サーバーから認証を求められました。IDとPASSWORDを設定してください")
+            log1write("【警告】サーバーから認証を求められました。IDとPASSWORDを設定して再起動してください")
+            MsgBox("サーバーから認証を求められました。IDとPASSWORDを設定して再起動してください")
+        ElseIf S_server_status_str.Length < 100 Then
+            TabControl1.SelectedIndex = 5
+            TextBoxServerIP.Focus()
+            log1write(S_server_status_str)
+            log1write("【警告】サーバーとの通信に失敗しました。サーバーの状態を確認して再起動してください")
+            MsgBox("サーバーとの通信に失敗しました。サーバーの状態を確認して再起動してください")
         Else
             Dim sp As Integer = S_server_status_str.IndexOf("HTTPSTREAM_App=")
             If sp >= 0 Then
@@ -158,12 +164,10 @@
             End If
             Dim BS1_hlsApp As String = Instr_pickup(S_server_status_str, "BS1_hlsApp=", vbCrLf, 0)
             If S_HTTPSTREAM_App = 1 And BS1_hlsApp.IndexOf("vlc.exe") < 0 Then
-                MsgBox("サーバー TvRemoteViewer_VB.ini内のBS1_hlsAppにvlc.exeへのパスを設定してくだい。")
-                Close()
+                log1write("【警告】サーバー TvRemoteViewer_VB.ini内のBS1_hlsAppにvlc.exeへのパスを設定してくだい。")
             End If
             If S_HTTPSTREAM_App = 0 Then
-                MsgBox("サーバー TvRemoteViewer_VB.ini内のHTTPSTREAM_Appを1か2に設定してくだい。")
-                Close()
+                log1write("【警告】サーバー TvRemoteViewer_VB.ini内のHTTPSTREAM_Appを1か2に設定してくだい。")
             End If
 
             '成功
@@ -409,6 +413,12 @@
             End If
             sp = html.IndexOf("[bondriver", sp + 1)
         End While
+        If ComboBoxBonDriver.Text.Length = 0 Then
+            Try
+                ComboBoxBonDriver.SelectedIndex = 0
+            Catch ex As Exception
+            End Try
+        End If
     End Sub
 
     'フォーム上の項目を復元
@@ -552,6 +562,12 @@
                 Next
             End If
         End If
+        If ComboBoxResolution.Text.Length = 0 Then
+            Try
+                ComboBoxResolution.SelectedIndex = 0
+            Catch ex As Exception
+            End Try
+        End If
     End Sub
 
     'フォーム上のナンバーセレクトをセット
@@ -566,6 +582,12 @@
             For i As Integer = 0 To max - 1
                 ComboBoxNum.Items.Add(i + 1)
             Next
+        End If
+        If ComboBoxNum.Text.Length = 0 Then
+            Try
+                ComboBoxNum.SelectedIndex = 0
+            Catch ex As Exception
+            End Try
         End If
     End Sub
 
