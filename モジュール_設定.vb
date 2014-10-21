@@ -2,7 +2,7 @@
     '================================================
     '共通で使用する変数
     '================================================
-    Public version As String = "TvRemoteViewer_VB_client v0.05"
+    Public version As String = "TvRemoteViewer_VB_client v0.06"
 
     Public TvRemoteViewer_VB_client_start As Integer = 0 '無事起動したときに１になる
 

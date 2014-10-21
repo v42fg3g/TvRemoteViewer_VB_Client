@@ -30,7 +30,6 @@ Partial Class Form1
         Me.Label2 = New System.Windows.Forms.Label()
         Me.Label3 = New System.Windows.Forms.Label()
         Me.TextBoxServerIP = New System.Windows.Forms.TextBox()
-        Me.Label7 = New System.Windows.Forms.Label()
         Me.ComboBoxNum = New System.Windows.Forms.ComboBox()
         Me.Label8 = New System.Windows.Forms.Label()
         Me.TextBoxChSpace = New System.Windows.Forms.TextBox()
@@ -47,7 +46,6 @@ Partial Class Form1
         Me.ComboBoxServiceID = New System.Windows.Forms.ComboBox()
         Me.ComboBoxBonDriver = New System.Windows.Forms.ComboBox()
         Me.Label14 = New System.Windows.Forms.Label()
-        Me.Label20 = New System.Windows.Forms.Label()
         Me.ButtonProgram_D = New System.Windows.Forms.Button()
         Me.ButtonShowResolution = New System.Windows.Forms.Button()
         Me.Button2 = New System.Windows.Forms.Button()
@@ -83,7 +81,6 @@ Partial Class Form1
         Me.Label21 = New System.Windows.Forms.Label()
         Me.ButtonShowChannels = New System.Windows.Forms.Button()
         Me.ComboBoxResolution = New System.Windows.Forms.ComboBox()
-        Me.Label15 = New System.Windows.Forms.Label()
         Me.ComboBoxNHKMODE = New System.Windows.Forms.ComboBox()
         Me.Label16 = New System.Windows.Forms.Label()
         Me.Column2 = New System.Windows.Forms.DataGridViewTextBoxColumn()
@@ -146,23 +143,13 @@ Partial Class Form1
         Me.TextBoxServerIP.Size = New System.Drawing.Size(212, 19)
         Me.TextBoxServerIP.TabIndex = 10
         '
-        'Label7
-        '
-        Me.Label7.AutoSize = True
-        Me.Label7.Location = New System.Drawing.Point(428, 6)
-        Me.Label7.Name = "Label7"
-        Me.Label7.Size = New System.Drawing.Size(73, 12)
-        Me.Label7.TabIndex = 69
-        Me.Label7.Text = "ストリーム番号"
-        Me.Label7.Visible = False
-        '
         'ComboBoxNum
         '
         Me.ComboBoxNum.FormattingEnabled = True
         Me.ComboBoxNum.Items.AddRange(New Object() {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"})
         Me.ComboBoxNum.Location = New System.Drawing.Point(2, 3)
         Me.ComboBoxNum.Name = "ComboBoxNum"
-        Me.ComboBoxNum.Size = New System.Drawing.Size(51, 20)
+        Me.ComboBoxNum.Size = New System.Drawing.Size(40, 20)
         Me.ComboBoxNum.TabIndex = 1
         '
         'Label8
@@ -267,7 +254,7 @@ Partial Class Form1
         'LabelStream
         '
         Me.LabelStream.AutoSize = True
-        Me.LabelStream.Location = New System.Drawing.Point(324, 6)
+        Me.LabelStream.Location = New System.Drawing.Point(4, 29)
         Me.LabelStream.Name = "LabelStream"
         Me.LabelStream.Size = New System.Drawing.Size(47, 12)
         Me.LabelStream.TabIndex = 111
@@ -284,7 +271,7 @@ Partial Class Form1
         'ComboBoxBonDriver
         '
         Me.ComboBoxBonDriver.FormattingEnabled = True
-        Me.ComboBoxBonDriver.Location = New System.Drawing.Point(59, 3)
+        Me.ComboBoxBonDriver.Location = New System.Drawing.Point(48, 3)
         Me.ComboBoxBonDriver.Name = "ComboBoxBonDriver"
         Me.ComboBoxBonDriver.Size = New System.Drawing.Size(175, 20)
         Me.ComboBoxBonDriver.TabIndex = 2
@@ -297,16 +284,6 @@ Partial Class Form1
         Me.Label14.Size = New System.Drawing.Size(54, 12)
         Me.Label14.TabIndex = 107
         Me.Label14.Text = "ServiceID"
-        '
-        'Label20
-        '
-        Me.Label20.AutoSize = True
-        Me.Label20.Location = New System.Drawing.Point(472, 6)
-        Me.Label20.Name = "Label20"
-        Me.Label20.Size = New System.Drawing.Size(56, 12)
-        Me.Label20.TabIndex = 106
-        Me.Label20.Text = "BonDriver"
-        Me.Label20.Visible = False
         '
         'ButtonProgram_D
         '
@@ -460,10 +437,10 @@ Partial Class Form1
         Me.TabControl1.Controls.Add(Me.TabPage6)
         Me.TabControl1.Controls.Add(Me.TabPage7)
         Me.TabControl1.ItemSize = New System.Drawing.Size(44, 18)
-        Me.TabControl1.Location = New System.Drawing.Point(2, 29)
+        Me.TabControl1.Location = New System.Drawing.Point(2, 48)
         Me.TabControl1.Name = "TabControl1"
         Me.TabControl1.SelectedIndex = 0
-        Me.TabControl1.Size = New System.Drawing.Size(622, 681)
+        Me.TabControl1.Size = New System.Drawing.Size(622, 662)
         Me.TabControl1.TabIndex = 129
         '
         'TabPage1
@@ -472,7 +449,7 @@ Partial Class Form1
         Me.TabPage1.Location = New System.Drawing.Point(4, 22)
         Me.TabPage1.Name = "TabPage1"
         Me.TabPage1.Padding = New System.Windows.Forms.Padding(3)
-        Me.TabPage1.Size = New System.Drawing.Size(614, 655)
+        Me.TabPage1.Size = New System.Drawing.Size(614, 636)
         Me.TabPage1.TabIndex = 0
         Me.TabPage1.Text = "　地デジ　"
         '
@@ -678,42 +655,28 @@ Partial Class Form1
         'ComboBoxResolution
         '
         Me.ComboBoxResolution.FormattingEnabled = True
-        Me.ComboBoxResolution.Location = New System.Drawing.Point(240, 3)
+        Me.ComboBoxResolution.Location = New System.Drawing.Point(229, 3)
         Me.ComboBoxResolution.Name = "ComboBoxResolution"
         Me.ComboBoxResolution.Size = New System.Drawing.Size(78, 20)
         Me.ComboBoxResolution.TabIndex = 6
         '
-        'Label15
-        '
-        Me.Label15.AutoSize = True
-        Me.Label15.Location = New System.Drawing.Point(460, 6)
-        Me.Label15.Name = "Label15"
-        Me.Label15.Size = New System.Drawing.Size(41, 12)
-        Me.Label15.TabIndex = 92
-        Me.Label15.Text = "解像度"
-        Me.Label15.Visible = False
-        '
         'ComboBoxNHKMODE
         '
-        Me.ComboBoxNHKMODE.Enabled = False
         Me.ComboBoxNHKMODE.FormattingEnabled = True
-        Me.ComboBoxNHKMODE.Items.AddRange(New Object() {"0", "1", "2", "9", "11", "12"})
-        Me.ComboBoxNHKMODE.Location = New System.Drawing.Point(569, 3)
+        Me.ComboBoxNHKMODE.Items.AddRange(New Object() {"0 主･副", "1 主", "2 副", "9 VLC", "11 主", "12 副"})
+        Me.ComboBoxNHKMODE.Location = New System.Drawing.Point(347, 3)
         Me.ComboBoxNHKMODE.Name = "ComboBoxNHKMODE"
-        Me.ComboBoxNHKMODE.Size = New System.Drawing.Size(51, 20)
+        Me.ComboBoxNHKMODE.Size = New System.Drawing.Size(68, 20)
         Me.ComboBoxNHKMODE.TabIndex = 5
-        Me.ComboBoxNHKMODE.Text = "0"
-        Me.ComboBoxNHKMODE.Visible = False
         '
         'Label16
         '
         Me.Label16.AutoSize = True
-        Me.Label16.Location = New System.Drawing.Point(494, 6)
+        Me.Label16.Location = New System.Drawing.Point(317, 6)
         Me.Label16.Name = "Label16"
-        Me.Label16.Size = New System.Drawing.Size(60, 12)
+        Me.Label16.Size = New System.Drawing.Size(28, 12)
         Me.Label16.TabIndex = 72
-        Me.Label16.Text = "NHKMODE"
-        Me.Label16.Visible = False
+        Me.Label16.Text = "NHK"
         '
         'Column2
         '
@@ -760,9 +723,6 @@ Partial Class Form1
         Me.Controls.Add(Me.TextBoxLog)
         Me.Controls.Add(Me.LabelStream)
         Me.Controls.Add(Me.ComboBoxBonDriver)
-        Me.Controls.Add(Me.Label7)
-        Me.Controls.Add(Me.Label15)
-        Me.Controls.Add(Me.Label20)
         Me.Controls.Add(Me.ComboBoxNHKMODE)
         Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
         Me.Name = "Form1"
@@ -787,7 +747,6 @@ Partial Class Form1
     Friend WithEvents Label2 As System.Windows.Forms.Label
     Friend WithEvents Label3 As System.Windows.Forms.Label
     Friend WithEvents TextBoxServerIP As System.Windows.Forms.TextBox
-    Private WithEvents Label7 As System.Windows.Forms.Label
     Friend WithEvents ComboBoxNum As System.Windows.Forms.ComboBox
     Friend WithEvents Label8 As System.Windows.Forms.Label
     Friend WithEvents TextBoxChSpace As System.Windows.Forms.TextBox
@@ -804,7 +763,6 @@ Partial Class Form1
     Friend WithEvents ComboBoxServiceID As System.Windows.Forms.ComboBox
     Friend WithEvents ComboBoxBonDriver As System.Windows.Forms.ComboBox
     Private WithEvents Label14 As System.Windows.Forms.Label
-    Private WithEvents Label20 As System.Windows.Forms.Label
     Friend WithEvents ButtonProgram_D As System.Windows.Forms.Button
     Friend WithEvents ButtonShowResolution As System.Windows.Forms.Button
     Friend WithEvents Button2 As System.Windows.Forms.Button
@@ -839,7 +797,6 @@ Partial Class Form1
     Private WithEvents Label16 As System.Windows.Forms.Label
     Friend WithEvents ButtonStop As System.Windows.Forms.Button
     Friend WithEvents ButtonStart As System.Windows.Forms.Button
-    Friend WithEvents Label15 As System.Windows.Forms.Label
     Friend WithEvents ComboBoxNHKMODE As System.Windows.Forms.ComboBox
     Friend WithEvents Column2 As System.Windows.Forms.DataGridViewTextBoxColumn
     Friend WithEvents Column1 As System.Windows.Forms.DataGridViewTextBoxColumn

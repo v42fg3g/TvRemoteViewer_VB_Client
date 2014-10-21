@@ -182,6 +182,10 @@
             set_videofiles() 'ファイル一覧をセット
             show_LabelStream() '現在稼働中のプロセスを表示
             make_vlcURL() 'ローカルVLCに渡すURLをセット
+            'NHKMODE
+            If ComboBoxNHKMODE.Text.ToString.Length = 0 Then
+                ComboBoxNHKMODE.SelectedIndex = 0
+            End If
 
             If file_exist(TextBoxVLCPATH.Text.ToString) = 0 Then
                 log1write("プレーヤーの指定が不正です")
@@ -1153,21 +1157,25 @@
     'タブ ファイル再生
     Private Sub TabPage4_Enter(sender As System.Object, e As System.EventArgs) Handles TabPage4.Enter
         textboxlog_bringtofront()
+        Form1Resize()
     End Sub
 
     'タブ 手動再生
     Private Sub TabPage5_Enter(sender As System.Object, e As System.EventArgs) Handles TabPage5.Enter
         textboxlog_bringtofront()
+        Form1Resize()
     End Sub
 
     'タブ 設定
     Private Sub TabPage6_Enter(sender As System.Object, e As System.EventArgs) Handles TabPage6.Enter
         textboxlog_bringtofront()
+        Form1Resize()
     End Sub
 
     'タブ　サーバー
     Private Sub TabPage7_Enter(sender As System.Object, e As System.EventArgs) Handles TabPage7.Enter
         textboxlog_bringtofront()
+        Form1Resize()
     End Sub
 
     'タブ　番組表以外を押された場合にログを最前面に
@@ -1182,6 +1190,10 @@
 
     'リサイズ
     Private Sub Form1_Resize(sender As System.Object, e As System.EventArgs) Handles MyBase.Resize
+        Form1Resize()
+    End Sub
+
+    Private Sub Form1Resize()
         'タブコントロール
         TabControl1.Width = Me.Width
         TabControl1.Height = Me.Height - 24 - 40
@@ -1250,17 +1262,19 @@
                 Dim d() As String = s.Split(",")
                 If d.Length = 2 Then
                     '優先指定があればそれに切り替える
-                    If Val(d(1)) = 1 Or Val(d(0)) < 1024 Then
-                        If TvProgramS_BonDriver1st.Length > 0 Then
-                            bondriver = TvProgramS_BonDriver1st
-                        End If
-                    Else
-                        '地デジ
-                        If TvProgramD_BonDriver1st.Length > 0 Then
-                            bondriver = TvProgramD_BonDriver1st
+                    If bondriver.Length = 0 Or bondriver.IndexOf("---") = 0 Then
+                        If Val(d(1)) = 1 Or Val(d(0)) < 1024 Then
+                            If TvProgramS_BonDriver1st.Length > 0 Then
+                                bondriver = TvProgramS_BonDriver1st
+                            End If
+                        Else
+                            '地デジ
+                            If TvProgramD_BonDriver1st.Length > 0 Then
+                                bondriver = TvProgramD_BonDriver1st
+                            End If
                         End If
                     End If
-                    If bondriver.Length > 0 Or bondriver.IndexOf("---") < 0 Then
+                    If bondriver.Length > 0 And bondriver.IndexOf("---") < 0 Then
                         log1write(bondriver & "を使用します")
                         Start_Stream(2, bondriver, Val(d(0)), Val(d(1)))
                     Else
@@ -1284,4 +1298,5 @@
             e.Cancel = True
         End If
     End Sub
+
 End Class
