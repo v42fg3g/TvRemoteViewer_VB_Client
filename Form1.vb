@@ -309,6 +309,11 @@
         '一時表示していたtextboxlogを消す
         textboxlog_temp_do()
 
+        '10秒に一度配信状況を表示
+        If (Second(Now()) Mod 10) = 5 Then '10秒毎に
+            show_LabelStream() '現在稼働中のプロセスを表示
+        End If
+
         '番組表を表示中ならば1分毎に更新
         If TabControl1.SelectedIndex <= 2 Then
             If Second(Now()) = 2 Then 'X分02秒ならば
@@ -764,15 +769,17 @@
 
     'ストリームを停止する
     Public Sub stop_stream(ByVal num As Integer)
-        If textboxlog_temp = 0 Then
-            textboxlog_temp_left = TextBoxLog.Left
-            textboxlog_temp_width = TextBoxLog.Width
-            TextBoxLog.Left = Int(TextBoxLog.Width / 2)
-            TextBoxLog.Width = Int(TextBoxLog.Width / 2) - 6
+        If TabControl1.SelectedIndex <= 2 Then
+            If textboxlog_temp = 0 Then
+                textboxlog_temp_left = TextBoxLog.Left
+                textboxlog_temp_width = TextBoxLog.Width
+                TextBoxLog.Left = Int(TextBoxLog.Width / 2)
+                TextBoxLog.Width = Int(TextBoxLog.Width / 2) - 6
+            End If
+            TextBoxLog.BringToFront()
+            textboxlog_temp = textboxlog_temp_howlong 'ログ表示秒数
+            textboxlog_temp_stratstop = 1
         End If
-        TextBoxLog.BringToFront()
-        textboxlog_temp = textboxlog_temp_howlong 'ログ表示秒数
-        textboxlog_temp_stratstop = 1
 
         'VLCを閉じる
         stop_vlc(num)
