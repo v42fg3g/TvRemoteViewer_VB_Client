@@ -1,4 +1,14 @@
-﻿Public Class Form1
+﻿Imports System.Collections.Generic
+Imports System.Linq
+Imports System.Text
+Imports System.Diagnostics
+Imports Microsoft.Win32
+Imports System.Runtime.InteropServices
+Imports System.Management
+Imports System.Net.Sockets
+Imports System.IO
+
+Public Class Form1
     '番組表表示
     Public Sub show_TvProgram(ByVal pn As Integer)
         '0=地デジ 998=EDCB 999=TvRock
@@ -850,6 +860,9 @@
         udpPsi.FileName = vlc_path
         'コマンドライン引数を指定する
         udpPsi.Arguments = vlc_url
+        'udpPsi.Arguments = "-I rc " & vlc_url & " –rc-host localhost:8080"
+        'udpPsi.Arguments = "-I rc " & vlc_url & " --intf=""rc"" --rc-quiet --rc-host=localhost:8080 vlc://quit"
+        'udpPsi.Arguments = "-I rc " & vlc_url & " --intf=""rc"" --rc-host=localhost:8080 vlc://quit"
         'アプリケーションを起動する
         Dim udpProc As System.Diagnostics.Process = System.Diagnostics.Process.Start(udpPsi)
         'udpProc.PriorityClass = System.Diagnostics.ProcessPriorityClass.High
