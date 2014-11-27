@@ -48,7 +48,7 @@ Module モジュール_WEBインターフェース
     End Function
 
     '配信スタート
-    Public Function WI_START_STREAM(ByVal num As Integer, ByVal BonDriver As String, ByVal ServiceID As Integer, ByVal chspace As Integer, ByVal resolution As String, ByVal NHKMODE As Integer, ByVal stream_mode As Integer, ByVal VideoFilename As String) As String
+    Public Function WI_START_STREAM(ByVal num As Integer, ByVal BonDriver As String, ByVal ServiceID As Integer, ByVal chspace As Integer, ByVal resolution As String, ByVal NHKMODE As Integer, ByVal stream_mode As Integer, ByVal VideoFilename As String, ByVal SeekSeconds As Integer) As String
         'TvRemoteViewer_VB->WebRemocon.vb->Web_Start
         Dim r As String = ""
         Dim para As String = ""
@@ -60,10 +60,12 @@ Module モジュール_WEBインターフェース
         para &= "resolution=" & resolution & "&"
         para &= "NHKMODE=" & NHKMODE.ToString & "&"
         para &= "StreamMode=" & stream_mode.ToString & "&"
+        para &= "VideoSeekSeconds=" & SeekSeconds.ToString & "&"
 
         Dim VideoFullpathFileName As String = VideoFilename
         ''なぜかそのまま渡すと返ってきたときに文字化けするのでURLエンコードしておく
         Dim VideoFullpathFileName_enc As String = System.Web.HttpUtility.UrlEncode(VideoFullpathFileName)
+        'Dim VideoFullpathFileName_enc As String = VideoFullpathFileName 'エンコしなくてもおｋになったはずだがしてもおｋ
         para &= "VideoName=" & VideoFullpathFileName_enc
 
         r = GET_HTML_REPLY(M_TVRV_URL & "WI_START_STREAM.html", para, "Shift_JIS")
@@ -155,6 +157,14 @@ Module モジュール_WEBインターフェース
     Public Function WI_GET_PROGRAM_EDCB() As String
         Dim r As String = ""
         r = GET_HTML_REPLY(M_TVRV_URL & "WI_GET_PROGRAM_EDCB.html", "")
+        Return r
+    End Function
+
+    '放送中番組
+    Public Function WI_GET_PROGRAM_NUM() As String
+        Dim r As String = ""
+        Dim para As String = "num=0"
+        r = GET_HTML_REPLY(M_TVRV_URL & "WI_GET_PROGRAM_NUM.html", para)
         Return r
     End Function
 End Module

@@ -67,6 +67,11 @@ Partial Class Form1
         Me.TabPage2 = New System.Windows.Forms.TabPage()
         Me.TabPage3 = New System.Windows.Forms.TabPage()
         Me.TabPage4 = New System.Windows.Forms.TabPage()
+        Me.Label9 = New System.Windows.Forms.Label()
+        Me.Label7 = New System.Windows.Forms.Label()
+        Me.TextBoxFirstSeek = New System.Windows.Forms.TextBox()
+        Me.Button8 = New System.Windows.Forms.Button()
+        Me.Button7 = New System.Windows.Forms.Button()
         Me.Label23 = New System.Windows.Forms.Label()
         Me.ButtonStop_file = New System.Windows.Forms.Button()
         Me.ButtonStart_file = New System.Windows.Forms.Button()
@@ -78,6 +83,7 @@ Partial Class Form1
         Me.TabPage6 = New System.Windows.Forms.TabPage()
         Me.Label18 = New System.Windows.Forms.Label()
         Me.TabPage7 = New System.Windows.Forms.TabPage()
+        Me.Button6 = New System.Windows.Forms.Button()
         Me.Label21 = New System.Windows.Forms.Label()
         Me.ButtonShowChannels = New System.Windows.Forms.Button()
         Me.ComboBoxResolution = New System.Windows.Forms.ComboBox()
@@ -86,6 +92,19 @@ Partial Class Form1
         Me.Column2 = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.Column1 = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.DataGridView1 = New System.Windows.Forms.DataGridView()
+        Me.Button5 = New System.Windows.Forms.Button()
+        Me.Button9 = New System.Windows.Forms.Button()
+        Me.Button10 = New System.Windows.Forms.Button()
+        Me.Button11 = New System.Windows.Forms.Button()
+        Me.Button12 = New System.Windows.Forms.Button()
+        Me.Button13 = New System.Windows.Forms.Button()
+        Me.Button14 = New System.Windows.Forms.Button()
+        Me.Button15 = New System.Windows.Forms.Button()
+        Me.Label15 = New System.Windows.Forms.Label()
+        Me.Label20 = New System.Windows.Forms.Label()
+        Me.TextBoxSeek = New System.Windows.Forms.TextBox()
+        Me.Button16 = New System.Windows.Forms.Button()
+        Me.Label22 = New System.Windows.Forms.Label()
         Me.TabControl1.SuspendLayout()
         Me.TabPage4.SuspendLayout()
         Me.TabPage5.SuspendLayout()
@@ -476,6 +495,23 @@ Partial Class Form1
         'TabPage4
         '
         Me.TabPage4.BackColor = System.Drawing.SystemColors.Control
+        Me.TabPage4.Controls.Add(Me.Label22)
+        Me.TabPage4.Controls.Add(Me.Label15)
+        Me.TabPage4.Controls.Add(Me.Label20)
+        Me.TabPage4.Controls.Add(Me.TextBoxSeek)
+        Me.TabPage4.Controls.Add(Me.Button16)
+        Me.TabPage4.Controls.Add(Me.Button12)
+        Me.TabPage4.Controls.Add(Me.Button13)
+        Me.TabPage4.Controls.Add(Me.Button14)
+        Me.TabPage4.Controls.Add(Me.Button15)
+        Me.TabPage4.Controls.Add(Me.Button11)
+        Me.TabPage4.Controls.Add(Me.Button10)
+        Me.TabPage4.Controls.Add(Me.Button9)
+        Me.TabPage4.Controls.Add(Me.Label9)
+        Me.TabPage4.Controls.Add(Me.Label7)
+        Me.TabPage4.Controls.Add(Me.TextBoxFirstSeek)
+        Me.TabPage4.Controls.Add(Me.Button8)
+        Me.TabPage4.Controls.Add(Me.Button7)
         Me.TabPage4.Controls.Add(Me.Label23)
         Me.TabPage4.Controls.Add(Me.ButtonStop_file)
         Me.TabPage4.Controls.Add(Me.ButtonStart_file)
@@ -487,6 +523,50 @@ Partial Class Form1
         Me.TabPage4.Size = New System.Drawing.Size(614, 636)
         Me.TabPage4.TabIndex = 3
         Me.TabPage4.Text = "　ファイル　"
+        '
+        'Label9
+        '
+        Me.Label9.AutoSize = True
+        Me.Label9.Location = New System.Drawing.Point(30, 105)
+        Me.Label9.Name = "Label9"
+        Me.Label9.Size = New System.Drawing.Size(57, 12)
+        Me.Label9.TabIndex = 144
+        Me.Label9.Text = "開始シーク"
+        '
+        'Label7
+        '
+        Me.Label7.AutoSize = True
+        Me.Label7.Location = New System.Drawing.Point(125, 105)
+        Me.Label7.Name = "Label7"
+        Me.Label7.Size = New System.Drawing.Size(17, 12)
+        Me.Label7.TabIndex = 143
+        Me.Label7.Text = "秒"
+        '
+        'TextBoxFirstSeek
+        '
+        Me.TextBoxFirstSeek.Location = New System.Drawing.Point(88, 102)
+        Me.TextBoxFirstSeek.Name = "TextBoxFirstSeek"
+        Me.TextBoxFirstSeek.Size = New System.Drawing.Size(35, 19)
+        Me.TextBoxFirstSeek.TabIndex = 142
+        Me.TextBoxFirstSeek.Text = "0"
+        '
+        'Button8
+        '
+        Me.Button8.Location = New System.Drawing.Point(256, 194)
+        Me.Button8.Name = "Button8"
+        Me.Button8.Size = New System.Drawing.Size(31, 23)
+        Me.Button8.TabIndex = 141
+        Me.Button8.Text = "||"
+        Me.Button8.UseVisualStyleBackColor = True
+        '
+        'Button7
+        '
+        Me.Button7.Location = New System.Drawing.Point(293, 194)
+        Me.Button7.Name = "Button7"
+        Me.Button7.Size = New System.Drawing.Size(48, 23)
+        Me.Button7.TabIndex = 140
+        Me.Button7.Text = "+15"
+        Me.Button7.UseVisualStyleBackColor = True
         '
         'Label23
         '
@@ -500,7 +580,7 @@ Partial Class Form1
         '
         'ButtonStop_file
         '
-        Me.ButtonStop_file.Location = New System.Drawing.Point(192, 216)
+        Me.ButtonStop_file.Location = New System.Drawing.Point(252, 100)
         Me.ButtonStop_file.Name = "ButtonStop_file"
         Me.ButtonStop_file.Size = New System.Drawing.Size(46, 23)
         Me.ButtonStop_file.TabIndex = 134
@@ -510,18 +590,18 @@ Partial Class Form1
         '
         'ButtonStart_file
         '
-        Me.ButtonStart_file.Location = New System.Drawing.Point(88, 216)
+        Me.ButtonStart_file.Location = New System.Drawing.Point(148, 100)
         Me.ButtonStart_file.Name = "ButtonStart_file"
         Me.ButtonStart_file.Size = New System.Drawing.Size(98, 23)
         Me.ButtonStart_file.TabIndex = 133
         Me.ButtonStart_file.TabStop = False
-        Me.ButtonStart_file.Text = "接続"
+        Me.ButtonStart_file.Text = "再生"
         Me.ButtonStart_file.UseVisualStyleBackColor = True
         '
         'ComboBoxVideo
         '
         Me.ComboBoxVideo.FormattingEnabled = True
-        Me.ComboBoxVideo.Location = New System.Drawing.Point(88, 94)
+        Me.ComboBoxVideo.Location = New System.Drawing.Point(88, 53)
         Me.ComboBoxVideo.Name = "ComboBoxVideo"
         Me.ComboBoxVideo.Size = New System.Drawing.Size(311, 20)
         Me.ComboBoxVideo.TabIndex = 7
@@ -529,7 +609,7 @@ Partial Class Form1
         'Label5
         '
         Me.Label5.AutoSize = True
-        Me.Label5.Location = New System.Drawing.Point(14, 97)
+        Me.Label5.Location = New System.Drawing.Point(14, 56)
         Me.Label5.Name = "Label5"
         Me.Label5.Size = New System.Drawing.Size(63, 12)
         Me.Label5.TabIndex = 119
@@ -614,6 +694,7 @@ Partial Class Form1
         'TabPage7
         '
         Me.TabPage7.BackColor = System.Drawing.SystemColors.Control
+        Me.TabPage7.Controls.Add(Me.Button6)
         Me.TabPage7.Controls.Add(Me.Label21)
         Me.TabPage7.Controls.Add(Me.ButtonShowStreams)
         Me.TabPage7.Controls.Add(Me.Button4)
@@ -631,6 +712,16 @@ Partial Class Form1
         Me.TabPage7.Size = New System.Drawing.Size(614, 636)
         Me.TabPage7.TabIndex = 6
         Me.TabPage7.Text = "サーバー"
+        '
+        'Button6
+        '
+        Me.Button6.Location = New System.Drawing.Point(173, 75)
+        Me.Button6.Name = "Button6"
+        Me.Button6.Size = New System.Drawing.Size(151, 23)
+        Me.Button6.TabIndex = 131
+        Me.Button6.TabStop = False
+        Me.Button6.Text = "配信中番組"
+        Me.Button6.UseVisualStyleBackColor = True
         '
         'Label21
         '
@@ -710,11 +801,130 @@ Partial Class Form1
         Me.DataGridView1.Size = New System.Drawing.Size(611, 156)
         Me.DataGridView1.TabIndex = 130
         '
+        'Button5
+        '
+        Me.Button5.Location = New System.Drawing.Point(545, 6)
+        Me.Button5.Name = "Button5"
+        Me.Button5.Size = New System.Drawing.Size(75, 23)
+        Me.Button5.TabIndex = 131
+        Me.Button5.Text = "Button5"
+        Me.Button5.UseVisualStyleBackColor = True
+        Me.Button5.Visible = False
+        '
+        'Button9
+        '
+        Me.Button9.Location = New System.Drawing.Point(347, 194)
+        Me.Button9.Name = "Button9"
+        Me.Button9.Size = New System.Drawing.Size(48, 23)
+        Me.Button9.TabIndex = 145
+        Me.Button9.Text = "+30"
+        Me.Button9.UseVisualStyleBackColor = True
+        '
+        'Button10
+        '
+        Me.Button10.Location = New System.Drawing.Point(402, 194)
+        Me.Button10.Name = "Button10"
+        Me.Button10.Size = New System.Drawing.Size(48, 23)
+        Me.Button10.TabIndex = 146
+        Me.Button10.Text = "+60"
+        Me.Button10.UseVisualStyleBackColor = True
+        '
+        'Button11
+        '
+        Me.Button11.Location = New System.Drawing.Point(456, 194)
+        Me.Button11.Name = "Button11"
+        Me.Button11.Size = New System.Drawing.Size(48, 23)
+        Me.Button11.TabIndex = 147
+        Me.Button11.Text = "+90"
+        Me.Button11.UseVisualStyleBackColor = True
+        '
+        'Button12
+        '
+        Me.Button12.Location = New System.Drawing.Point(201, 194)
+        Me.Button12.Name = "Button12"
+        Me.Button12.Size = New System.Drawing.Size(48, 23)
+        Me.Button12.TabIndex = 151
+        Me.Button12.Text = "-15"
+        Me.Button12.UseVisualStyleBackColor = True
+        '
+        'Button13
+        '
+        Me.Button13.Location = New System.Drawing.Point(147, 194)
+        Me.Button13.Name = "Button13"
+        Me.Button13.Size = New System.Drawing.Size(48, 23)
+        Me.Button13.TabIndex = 150
+        Me.Button13.Text = "-30"
+        Me.Button13.UseVisualStyleBackColor = True
+        '
+        'Button14
+        '
+        Me.Button14.Location = New System.Drawing.Point(92, 194)
+        Me.Button14.Name = "Button14"
+        Me.Button14.Size = New System.Drawing.Size(48, 23)
+        Me.Button14.TabIndex = 149
+        Me.Button14.Text = "-60"
+        Me.Button14.UseVisualStyleBackColor = True
+        '
+        'Button15
+        '
+        Me.Button15.Location = New System.Drawing.Point(38, 194)
+        Me.Button15.Name = "Button15"
+        Me.Button15.Size = New System.Drawing.Size(48, 23)
+        Me.Button15.TabIndex = 148
+        Me.Button15.Text = "-90"
+        Me.Button15.UseVisualStyleBackColor = True
+        '
+        'Label15
+        '
+        Me.Label15.AutoSize = True
+        Me.Label15.Location = New System.Drawing.Point(36, 238)
+        Me.Label15.Name = "Label15"
+        Me.Label15.Size = New System.Drawing.Size(103, 12)
+        Me.Label15.TabIndex = 155
+        Me.Label15.Text = "シーク 動画冒頭から"
+        '
+        'Label20
+        '
+        Me.Label20.AutoSize = True
+        Me.Label20.Location = New System.Drawing.Point(184, 238)
+        Me.Label20.Name = "Label20"
+        Me.Label20.Size = New System.Drawing.Size(51, 12)
+        Me.Label20.TabIndex = 154
+        Me.Label20.Text = "秒地点へ"
+        '
+        'TextBoxSeek
+        '
+        Me.TextBoxSeek.Location = New System.Drawing.Point(147, 235)
+        Me.TextBoxSeek.Name = "TextBoxSeek"
+        Me.TextBoxSeek.Size = New System.Drawing.Size(35, 19)
+        Me.TextBoxSeek.TabIndex = 153
+        Me.TextBoxSeek.Text = "0"
+        '
+        'Button16
+        '
+        Me.Button16.Location = New System.Drawing.Point(241, 233)
+        Me.Button16.Name = "Button16"
+        Me.Button16.Size = New System.Drawing.Size(98, 23)
+        Me.Button16.TabIndex = 152
+        Me.Button16.TabStop = False
+        Me.Button16.Text = "ジャンプ"
+        Me.Button16.UseVisualStyleBackColor = True
+        '
+        'Label22
+        '
+        Me.Label22.AutoSize = True
+        Me.Label22.Location = New System.Drawing.Point(14, 164)
+        Me.Label22.Name = "Label22"
+        Me.Label22.Size = New System.Drawing.Size(165, 12)
+        Me.Label22.TabIndex = 156
+        Me.Label22.Text = "シーク　ffmpegでの配信のみ有効"
+        '
         'Form1
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 12.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(624, 709)
+        Me.Controls.Add(Me.Button5)
         Me.Controls.Add(Me.DataGridView1)
         Me.Controls.Add(Me.ComboBoxNum)
         Me.Controls.Add(Me.ComboBoxResolution)
@@ -803,5 +1013,24 @@ Partial Class Form1
     Friend WithEvents DataGridView1 As System.Windows.Forms.DataGridView
     Friend WithEvents TabPage7 As System.Windows.Forms.TabPage
     Friend WithEvents ButtonShowChannels As System.Windows.Forms.Button
+    Friend WithEvents Button5 As System.Windows.Forms.Button
+    Friend WithEvents Button6 As System.Windows.Forms.Button
+    Friend WithEvents Button7 As System.Windows.Forms.Button
+    Friend WithEvents Button8 As System.Windows.Forms.Button
+    Friend WithEvents Label7 As System.Windows.Forms.Label
+    Friend WithEvents TextBoxFirstSeek As System.Windows.Forms.TextBox
+    Friend WithEvents Label9 As System.Windows.Forms.Label
+    Friend WithEvents Label15 As System.Windows.Forms.Label
+    Friend WithEvents Label20 As System.Windows.Forms.Label
+    Friend WithEvents TextBoxSeek As System.Windows.Forms.TextBox
+    Friend WithEvents Button16 As System.Windows.Forms.Button
+    Friend WithEvents Button12 As System.Windows.Forms.Button
+    Friend WithEvents Button13 As System.Windows.Forms.Button
+    Friend WithEvents Button14 As System.Windows.Forms.Button
+    Friend WithEvents Button15 As System.Windows.Forms.Button
+    Friend WithEvents Button11 As System.Windows.Forms.Button
+    Friend WithEvents Button10 As System.Windows.Forms.Button
+    Friend WithEvents Button9 As System.Windows.Forms.Button
+    Friend WithEvents Label22 As System.Windows.Forms.Label
 
 End Class

@@ -1,14 +1,4 @@
-﻿Imports System.Collections.Generic
-Imports System.Linq
-Imports System.Text
-Imports System.Diagnostics
-Imports Microsoft.Win32
-Imports System.Runtime.InteropServices
-Imports System.Management
-Imports System.Net.Sockets
-Imports System.IO
-
-Public Class Form1
+﻿Public Class Form1
     '番組表表示
     Public Sub show_TvProgram(ByVal pn As Integer)
         '0=地デジ 998=EDCB 999=TvRock
@@ -129,12 +119,21 @@ Public Class Form1
     End Sub
 
     Private Sub Form1_Load(sender As System.Object, e As System.EventArgs) Handles MyBase.Load
+        '二重起動をチェックする
+        If Diagnostics.Process.GetProcessesByName(Diagnostics.Process.GetCurrentProcess.ProcessName).Length > 1 Then
+            'すでに起動していると判断する
+            Close()
+        End If
+
         'DataGridView1
         DataGridView1.RowTemplate.Height = 70
     End Sub
 
     Private Sub Form1_Shown(sender As System.Object, e As System.EventArgs) Handles MyBase.Shown
         log1write(version)
+
+        '全てのvlc停止
+        stopProcName("vlc")
 
         '初期設定読み込み
         read_ini()
@@ -223,13 +222,16 @@ Public Class Form1
     Private Sub Form1_FormClosing(sender As System.Object, e As System.Windows.Forms.FormClosingEventArgs) Handles MyBase.FormClosing
         'VLCを消してストリームも停止する
         For i = 0 To 29
-            If player_proc(i) > 0 Then
+            If player(i).proc > 0 Then
                 Try
                     stop_stream(i)
                 Catch ex As Exception
                 End Try
             End If
         Next
+
+        '全てのvlc停止
+        stopProcName("vlc")
 
         'フォーム項目を保存
         If TvRemoteViewer_VB_client_start = 1 Then
@@ -292,37 +294,99 @@ Public Class Form1
 
     Private Sub Timer1_Tick(sender As System.Object, e As System.EventArgs) Handles Timer1.Tick
         Dim i As Integer = 0
+        'Dim result1 As String = ""
+        Dim result2 As String = ""
 
         'VLCのcrashダイアログが出ていたら消す
         check_crash_dialog()
 
-        'VLCが消されたら停止する
-        For i = 0 To 29
-            If player_proc(i) > 0 Then
-                Try
-                    Dim ps As System.Diagnostics.Process = System.Diagnostics.Process.GetProcessById(player_proc(i))
-                    If ps.HasExited = True Then
-                        player_proc(i) = 0
+        If time1_ng = 0 Then
+            time1_ng = 1
+
+            'VLCが消されたら停止する
+            For i = 0 To 29
+                If player(i).proc > 0 And player(i).Seeking = 0 Then
+                    'result1 = Trim(VLC_remote("is_playing", VLC_rc_port + i - 1))
+                    ''status change: ( new input: ttp://127.0.0.1:40003/WatchTV1.ts )～と返ってくることがある
+                    'If result1.Length > 0 Then
+                    'result1 = Val(result1.Substring(result1.Length - 1, 1)) '0か1のみ取り出す
+                    'If result1 = "1" Then
+                    'If player(i).start_utime = 0 Then
+                    'player(i).start_utime = time2unix(Now())
+                    'log1write("player_start(" & i & ")=" & Now())
+                    'End If
+                    'End If
+                    'Else
+                    'result1 = "0"
+                    'End If
+
+                    'VLCにHTTPコマンドで問い合わせてis_playing=0なら停止
+                    result2 = Trim(VLC_remote("info", VLC_rc_port + i - 1))
+                    If result2.Length > 100 Then
+                        If player(i).start_utime = 0 Then
+                            player(i).start_utime = time2unix(Now())
+                            log1write("player_start(" & i & ")=" & Now())
+                        End If
+                    End If
+                    'Debug.Print("[" & result2 & "]")
+                    'If player(i).start_utime > 0 And (result2.IndexOf("no input") >= 0 Or result2.Length < 20 Or Val(result1) = 0) Then
+                    If player(i).start_utime > 0 And (result2.IndexOf("no input") >= 0 Or result2.Length < 20) Then
+                        'If result2.IndexOf("no input") >= 0 Or result2.Length < 20 Then
+                        '再生されていない
                         log1write("VLCが閉じられたのでストリームを停止します")
+                        'ローカルVCLを停止する
+                        stop_vlc(i)
+                        'サーバーに停止命令を送る
                         stop_stream(i)
                         log1write("VLCが閉じられたのでストリームを停止しました[1]")
+                    ElseIf player(i).start_utime > 0 And time2unix(Now()) - player(i).start_utime > 3 Then
+                        If Second(Now()) Mod 5 = 0 Then
+                            '5秒に一度チェック
+                            Dim result3 As String = Trim(VLC_remote("stats", VLC_rc_port + i - 1))
+                            If result3.Length > 0 Then
+                                result3 = Trim(Instr_pickup(result3, ":", "KiB", 0))
+                            End If
+                            If result3 = "0" Then
+                                'vlcは起動しているがプレーヤーが反応しない場合
+                                '再生されていない
+                                log1write("プレーヤー再生に失敗しています")
+                                'ローカルVCLを停止する
+                                stop_vlc(i)
+                                'サーバーに停止命令を送る
+                                stop_stream(i)
+                                log1write("プレーヤー再生に失敗したのでストリームを停止しました")
+                            End If
+                        End If
                     End If
-                Catch ex As Exception
-                    player_proc(i) = 0
-                    log1write("VLCが閉じられたのでストリームを停止します")
-                    stop_stream(i)
-                    log1write("VLCが閉じられたのでストリームを停止しました[2] " & ex.Message)
-                End Try
-            End If
-        Next
+
+                    '旧方式rcを使用するようにしたら使えない
+                    'VLCプロセスをチェック
+                    'Try
+                    'Dim ps As System.Diagnostics.Process = System.Diagnostics.Process.GetProcessById(player_proc(i))
+                    'If ps.HasExited = True Then
+                    'player_proc(i) = 0
+                    'log1write("VLCが閉じられたのでストリームを停止します")
+                    'stop_stream(i)
+                    'log1write("VLCが閉じられたのでストリームを停止しました[1]")
+                    'End If
+                    'Catch ex As Exception
+                    'player_proc(i) = 0
+                    'log1write("VLCが閉じられたのでストリームを停止します")
+                    'stop_stream(i)
+                    'log1write("VLCが閉じられたのでストリームを停止しました[2] " & ex.Message)
+                    'End Try
+                End If
+            Next
+            time1_ng = 0
+        End If
 
         '一時表示していたtextboxlogを消す
         textboxlog_temp_do()
 
         '10秒に一度配信状況を表示
-        If (Second(Now()) Mod 10) = 5 Then '10秒毎に
-            show_LabelStream() '現在稼働中のプロセスを表示
-        End If
+        'If (Second(Now()) Mod 10) = 5 Then '10秒毎に
+        'show_LabelStream() '現在稼働中のプロセスを表示
+        'End If
 
         '番組表を表示中ならば1分毎に更新
         If TabControl1.SelectedIndex <= 2 Then
@@ -479,6 +543,10 @@ Public Class Form1
                             TextBoxSuccessSecond.Text = lr(1)
                         Case "TabControl1_SelectedIndex"
                             TabControl1.SelectedIndex = Val(lr(1))
+                        Case "TextBoxFirstSeek"
+                            TextBoxFirstSeek.Text = lr(1)
+                        Case "TextBoxSeek"
+                            TextBoxSeek.Text = lr(1)
                         Case "window_location"
                             'ウィンドウの位置復元
                             Dim h As IntPtr
@@ -528,6 +596,8 @@ Public Class Form1
         s &= "TextBoxVLCURL=" & TextBoxVLCURL.Text & vbCrLf
         s &= "TextBoxSuccessSecond=" & TextBoxSuccessSecond.Text & vbCrLf
         s &= "TabControl1_SelectedIndex=" & TabControl1.SelectedIndex & vbCrLf
+        s &= "TextBoxSeek=" & TextBoxSeek.Text.ToString & vbCrLf
+        s &= "TextBoxFirstSeek=" & TextBoxFirstSeek.Text.ToString & vbCrLf
 
         'カレントディレクトリ変更
         F_set_ppath4program()
@@ -643,15 +713,24 @@ Public Class Form1
 
     '手動配信スタート
     Private Sub ButtonStart_Click(sender As System.Object, e As System.EventArgs) Handles ButtonStart.Click
-        Start_Stream(0)
+        Start_Stream(0, "", 0, 0, "", 0)
     End Sub
 
     'ファイル配信スタート
     Private Sub ButtonStart_file_Click(sender As System.Object, e As System.EventArgs) Handles ButtonStart_file.Click
-        Start_Stream(1)
+        Dim SeekSeconds As Integer = Val(TextBoxFirstSeek.Text.ToString)
+        Dim fullpathfilename As String = ComboBoxVideo.Text.ToString
+        Dim d() As String = fullpathfilename.Split(",")
+        If d.Length = 2 Then
+            fullpathfilename = d(1)
+        End If
+        If fullpathfilename.IndexOf(".") > 0 Then
+            Start_Stream(1, "", 0, 0, fullpathfilename, SeekSeconds)
+        End If
     End Sub
 
-    Private Sub Start_Stream(ByVal HandFile As Integer, Optional ByVal bondriver As String = "", Optional ByVal sid As Integer = 0, Optional ByVal chspace As Integer = 0)
+    Private Sub Start_Stream(ByVal HandFile As Integer, ByVal bondriver As String, ByVal sid As Integer, ByVal chspace As Integer, ByVal fullpathfilename As String, ByVal SeekSeconds As Integer)
+        'SeekSeconds=ファイル再生時の開始秒数
         'StreamMode 0=HLS再生 1=HLSファイル再生 2=HTTPストリーム再生　3=HTTPストリームファイル再生
         Dim response As String = ""
 
@@ -674,7 +753,8 @@ Public Class Form1
                                         ComboBoxResolution.Text, _
                                         Val(ComboBoxNHKMODE.Text), _
                                         StremMode, _
-                                        "" _
+                                        "", _
+                                        0 _
                                         )
                 Else
                     log1write("サービスIDが不正です")
@@ -686,25 +766,20 @@ Public Class Form1
             End If
         ElseIf HandFile = 1 Then
             'ファイル再生
-            Dim d() As String = ComboBoxVideo.Text.ToString.Split(",")
-            If d.Length = 2 Then
-                d(1) = Trim(d(1)) 'サーバーに渡す文字列
-                If d(1).Length > 0 Then
-                    Dim StremMode As Integer = 3
-                    response = WI_START_STREAM( _
-                                            num.ToString, _
-                                            "", _
-                                            0, _
-                                            0, _
-                                            ComboBoxResolution.Text, _
-                                            0, _
-                                            StremMode, _
-                                            d(1) _
-                                            )
-                End If
-            Else
-                log1write("ファイル指定が不正です")
-                Exit Sub
+            fullpathfilename = trim8(fullpathfilename) 'サーバーに渡す文字列
+            If fullpathfilename.Length > 0 Then
+                Dim StremMode As Integer = 3
+                response = WI_START_STREAM( _
+                                        num.ToString, _
+                                        "", _
+                                        0, _
+                                        0, _
+                                        ComboBoxResolution.Text, _
+                                        0, _
+                                        StremMode, _
+                                        fullpathfilename, _
+                                        SeekSeconds _
+                                        )
             End If
         ElseIf HandFile = 2 Then
             '番組表から
@@ -717,7 +792,8 @@ Public Class Form1
                                     ComboBoxResolution.Text, _
                                     Val(ComboBoxNHKMODE.Text), _
                                     StremMode, _
-                                    "" _
+                                    "", _
+                                    0 _
                                     )
         End If
 
@@ -751,9 +827,14 @@ Public Class Form1
             End While
 
             If count > 0 Then
-                log1write("配信が開始されました")
                 'あらかじめVLCを起動しておく
-                view_by_VLC(num)
+                view_by_VLC(num, fullpathfilename, SeekSeconds)
+
+                If SeekSeconds = 0 Then
+                    log1write("配信が開始されました")
+                Else
+                    log1write("動画冒頭から" & SeekSeconds & "秒の地点から配信が開始されました")
+                End If
             Else
                 'いつまで経っても配信が開始されない
                 log1write("いつまで経っても配信が開始されません")
@@ -789,6 +870,7 @@ Public Class Form1
             TextBoxLog.BringToFront()
             textboxlog_temp = textboxlog_temp_howlong 'ログ表示秒数
             textboxlog_temp_stratstop = 1
+            TextBoxLog.Refresh()
         End If
 
         'VLCを閉じる
@@ -802,11 +884,50 @@ Public Class Form1
 
     'VLC停止
     Private Sub stop_vlc(ByVal num As Integer)
-        Try
-            Dim ps As System.Diagnostics.Process = System.Diagnostics.Process.GetProcessById(player_proc(num))
-            ps.CloseMainWindow()
-        Catch ex As Exception
-        End Try
+        Dim i As Integer = 0
+        Dim result As String = ""
+        If player(num).proc > 0 Then
+            Try
+                While result.IndexOf("returned 0") < 0 And i < 10
+                    result = VLC_remote("quit", VLC_rc_port + num - 1)
+                    '↓正常終了の場合resultは下のように返ってくる
+                    'quit: returned 0 (no error)
+                    System.Threading.Thread.Sleep(300)
+                    i += 1
+                End While
+                If i = 10 Then
+                    '失敗
+
+                End If
+            Catch ex As Exception
+                log1write("VLCの終了に失敗しました")
+            End Try
+            player(num).proc = 0
+            player(num).start_utime = 0
+        End If
+
+        '旧方式
+        'Try
+        'Dim ps As System.Diagnostics.Process = System.Diagnostics.Process.GetProcessById(player_proc(num))
+        'ps.CloseMainWindow()
+        'Catch ex As Exception
+        'End Try
+    End Sub
+
+    'プロセスを名前指定で停止
+    Public Sub stopProcName(ByVal name As String)
+        Dim p As New System.Diagnostics.Process
+        Dim inst As Process
+        Dim myProcess() As Process
+        myProcess = System.Diagnostics.Process.GetProcessesByName(name)
+        For Each inst In myProcess
+            Try
+                p = System.Diagnostics.Process.GetProcessById(inst.Id)
+                p.Kill()
+            Catch ex As Exception
+                log1write(name & "の名前指定によるプロセス終了に失敗しました")
+            End Try
+        Next
     End Sub
 
     'サーバーＩＰ変更
@@ -840,18 +961,20 @@ Public Class Form1
 
     'VLC起動ボタン
     Private Sub ButtonRunVLC_Click(sender As System.Object, e As System.EventArgs) Handles ButtonRunVLC.Click
-        view_by_VLC(Val(ComboBoxNum.Text.ToString))
+        view_by_VLC(Val(ComboBoxNum.Text.ToString), "", 0)
         '稼働中ナンバー
         show_LabelStream() '現在稼働中のプロセスを表示
     End Sub
 
     'VLCで視聴
-    Private Sub view_by_VLC(ByVal num As Integer)
+    Private Sub view_by_VLC(ByVal num As Integer, ByVal fullpathfilename As String, ByVal SeekSeconds As Integer)
         Dim vlc_path As String = TextBoxVLCPATH.Text.ToString
         Dim vlc_url As String = TextBoxVLCURL.Text.ToString()
 
         'パスワードがあればVLC_URLに追加
         vlc_url = add_userpass2url(vlc_url, M_username, M_password)
+
+        Dim rc_port As Integer = VLC_rc_port + num - 1 'VLC listen port
 
         '★VLCを実行
         'ProcessStartInfoオブジェクトを作成する
@@ -859,16 +982,30 @@ Public Class Form1
         '起動するファイルのパスを指定する
         udpPsi.FileName = vlc_path
         'コマンドライン引数を指定する
-        udpPsi.Arguments = vlc_url
-        'udpPsi.Arguments = "-I rc " & vlc_url & " –rc-host localhost:8080"
+        'udpPsi.Arguments = vlc_url
         'udpPsi.Arguments = "-I rc " & vlc_url & " --intf=""rc"" --rc-quiet --rc-host=localhost:8080 vlc://quit"
-        'udpPsi.Arguments = "-I rc " & vlc_url & " --intf=""rc"" --rc-host=localhost:8080 vlc://quit"
+        'udpPsi.Arguments = "-I rc " & vlc_url & " --intf=""rc"" --rc-host=localhost:" & rc_port & " vlc://quit"
+        'udpPsi.Arguments = "-I dummy " & vlc_url & " --intf=""rc"" --rc-host=localhost:" & rc_port & " vlc://quit"
+        'udpPsi.Arguments = "-I dummy " & vlc_url & " --intf=""rc"" --rc-quiet --rc-host=localhost:" & rc_port & " vlc://quit"
+        'udpPsi.Arguments = "-I dummy " & vlc_url & " --extraintf=""rc"" --rc-quiet --rc-host=127.0.0.1:" & rc_port & " vlc://quit"
+        udpPsi.Arguments = "-I dummy --dummy-quiet " & vlc_url & " --extraintf=""rc"" --rc-quiet --rc-host=127.0.0.1:" & rc_port & " vlc://quit"
+        'udpPsi.Arguments = "-I dummy " & vlc_url & " --extraintf=""rc"" --rc-quiet --rc-host=127.0.0.1:" & rc_port & " vlc://quit"
         'アプリケーションを起動する
         Dim udpProc As System.Diagnostics.Process = System.Diagnostics.Process.Start(udpPsi)
         'udpProc.PriorityClass = System.Diagnostics.ProcessPriorityClass.High
 
         '起動したプロセスIDを記録しておく
-        player_proc(num) = udpProc.Id
+        player(num).start_utime = 0 '後でタイマーでプレーヤーの再生が確認されたときに値が入る
+        player(num).proc = udpProc.Id
+        player(num).fullpathfilename = fullpathfilename
+        player(num).last_SeekSeconds = SeekSeconds
+        player(num).Seeking = 0
+        player(num).stop1_utime = 0
+
+        'log1write("==============================================")
+        'log1write("start_utime=" & unix2time(player(num).start_utime))
+        'log1write("fullpathfilename=" & player(num).fullpathfilename)
+        'log1write("last_SeekSeconds=" & player(num).last_SeekSeconds)
     End Sub
 
     'パスワードをURLに追加
@@ -1114,6 +1251,12 @@ Public Class Form1
         '内部_List番号, 配信ナンバー, RecTaskUDPポート, BonDriver名, ServiceID, ChSpace, Stream_mode, NHKMODE, 停止中=1, 放送局名, HlsAppファイル名
     End Sub
 
+    '配信中放送局
+    Private Sub Button6_Click(sender As System.Object, e As System.EventArgs) Handles Button6.Click
+        log1write("=============================================")
+        log1write(WI_GET_PROGRAM_NUM())
+    End Sub
+
     '解像度一覧
     Private Sub ButtonShowResolution_Click(sender As System.Object, e As System.EventArgs) Handles ButtonShowResolution.Click
         log1write("=============================================")
@@ -1296,7 +1439,7 @@ Public Class Form1
                     End If
                     If bondriver.Length > 0 And bondriver.IndexOf("---") < 0 Then
                         log1write(bondriver & "を使用します")
-                        Start_Stream(2, bondriver, Val(d(0)), Val(d(1)))
+                        Start_Stream(2, bondriver, Val(d(0)), Val(d(1)), "", 0)
                     Else
                         log1write("BonDriverを選択してください")
                     End If
@@ -1319,4 +1462,128 @@ Public Class Form1
         End If
     End Sub
 
+    Private Sub Button5_Click(sender As System.Object, e As System.EventArgs) Handles Button5.Click
+        'テストボタン
+    End Sub
+
+    Private Sub skip_movie(ByVal skip_seconds As Integer)
+        Dim num As Integer = Val(ComboBoxNum.Text.ToString)
+        If num > 0 Then
+            player(num).Seeking = 1 'シーク中
+            Dim now_utime As Integer = time2unix(Now()) '現在の時間
+            Dim start_utime As Integer = player(num).start_utime 'プレーヤーがスタートした時間
+            Dim last_SeekSeconds As Integer = player(num).last_SeekSeconds 'プレーヤースタート時にシークされていた秒数
+            Dim SeekSeconds As Integer = 0
+            Dim fullpathfilename As String = ""
+            If start_utime > 0 Then
+                SeekSeconds = last_SeekSeconds + (now_utime - start_utime) + skip_seconds
+                fullpathfilename = player(num).fullpathfilename 'ビデオファイルを示す文字列
+                Start_Stream(1, "", 0, 0, fullpathfilename, SeekSeconds)
+            Else
+                log1write("プレーヤーでの再生が開始されていません")
+            End If
+            player(num).Seeking = 0 'シーク終了
+
+            'log1write("===============================")
+            'log1write("skip_seconds=" & skip_seconds)
+            'log1write("now_utime=" & unix2time(now_utime))
+            'log1write("start_utime=" & unix2time(start_utime))
+            'log1write("last_SeekSeconds=" & last_SeekSeconds)
+            'log1write("fullpathfilename=" & fullpathfilename)
+            'log1write("SeekSeconds=" & SeekSeconds)
+        End If
+    End Sub
+
+    Private Sub Button8_Click(sender As System.Object, e As System.EventArgs) Handles Button8.Click
+        '一時停止ボタン
+        Dim result As String = ""
+        Dim status As Integer = 0
+        Dim num As Integer = Val(ComboBoxNum.Text.ToString)
+        Dim start_utime As Integer = player(num).start_utime 'プレーヤーがスタートした時間
+        If Button8.Text = "＞" Then
+            Button8.Text = "||"
+            status = 0
+        Else
+            Button8.Text = "＞"
+            status = 1
+        End If
+        If num > 0 Then
+            If start_utime > 0 Then
+                If status = 1 Then
+                    '一時停止にする
+                    player(num).Seeking = 1 'シーク中
+                    'vlc一時停止
+                    result = VLC_remote("pause", VLC_rc_port + num - 1)
+                    player(num).stop1_utime = time2unix(Now())
+                Else
+                    '再生
+                    Dim SeekSeconds As Integer = player(num).last_SeekSeconds + (player(num).stop1_utime - player(num).start_utime)
+                    Dim fullpathfilename As String = player(num).fullpathfilename 'ビデオファイルを示す文字列
+                    Start_Stream(1, "", 0, 0, fullpathfilename, SeekSeconds - 1)
+                    player(num).Seeking = 0 'シーク終了
+                End If
+            Else
+                log1write("プレーヤーでの再生が開始されていません")
+                Button8.Text = "||"
+            End If
+        End If
+    End Sub
+
+    Private Sub Button7_Click(sender As System.Object, e As System.EventArgs) Handles Button7.Click
+        '秒スキップ
+        skip_movie(15)
+    End Sub
+
+    Private Sub Button9_Click(sender As System.Object, e As System.EventArgs) Handles Button9.Click
+        '秒スキップ
+        skip_movie(30)
+    End Sub
+
+    Private Sub Button10_Click(sender As System.Object, e As System.EventArgs) Handles Button10.Click
+        '秒スキップ
+        skip_movie(60)
+    End Sub
+
+    Private Sub Button11_Click(sender As System.Object, e As System.EventArgs) Handles Button11.Click
+        '秒スキップ
+        skip_movie(90)
+    End Sub
+
+    Private Sub Button12_Click(sender As System.Object, e As System.EventArgs) Handles Button12.Click
+        '秒スキップ
+        skip_movie(-15)
+    End Sub
+
+    Private Sub Button13_Click(sender As System.Object, e As System.EventArgs) Handles Button13.Click
+        '秒スキップ
+        skip_movie(-30)
+    End Sub
+
+    Private Sub Button14_Click(sender As System.Object, e As System.EventArgs) Handles Button14.Click
+        '秒スキップ
+        skip_movie(-60)
+    End Sub
+
+    Private Sub Button15_Click(sender As System.Object, e As System.EventArgs) Handles Button15.Click
+        '秒スキップ
+        skip_movie(-90)
+    End Sub
+
+    Private Sub Button16_Click(sender As System.Object, e As System.EventArgs) Handles Button16.Click
+        Dim num As Integer = Val(ComboBoxNum.Text.ToString)
+        If num > 0 Then
+            player(num).Seeking = 1 'シーク中
+            Dim start_utime As Integer = player(num).start_utime 'プレーヤーがスタートした時間
+            Dim fullpathfilename As String = ""
+            If start_utime > 0 Then
+                Dim SeekSeconds As Integer = Val(TextBoxSeek.Text.ToString)
+                fullpathfilename = player(num).fullpathfilename 'ビデオファイルを示す文字列
+                Start_Stream(1, "", 0, 0, fullpathfilename, SeekSeconds)
+            Else
+                log1write("プレーヤーでの再生が開始されていません")
+            End If
+            player(num).Seeking = 0 'シーク終了
+
+        End If
+    End Sub
 End Class

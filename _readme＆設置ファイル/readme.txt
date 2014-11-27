@@ -41,9 +41,13 @@ HLS_option_ffmpeg_http.txt
 
 
 
-WEBインターフェース一覧
-「サーバー」タブ参照のこと
-サーバーにWEBアクセスすることで各種命令＆情報取得ができます。
+■WEBインターフェース一覧
+ブラウザまはプログラム中からサーバーにWEBアクセスすることで各種命令＆情報取得ができます。
+「サーバー」タブで動作を試すことができます
+
+例：WI_GET_CHANNELS.htmlにアクセスするとWI_GET_CHANNELS()が呼び出され結果が返されます
+　　現在実装されているインターフェースは以下の通りです
+
 
     '配信スタート
     Public Function WI_START_STREAM(ByVal num As Integer, ByVal BonDriver As String, ByVal ServiceID As Integer, ByVal chspace As Integer, ByVal resolution As String, ByVal NHKMODE As Integer, ByVal stream_mode As Integer, ByVal VideoFilename As String) As String
@@ -76,3 +80,5 @@ WEBインターフェース一覧
     Public Function WI_GET_PROGRAM_D() As String
     Public Function WI_GET_PROGRAM_TVROCK() As String
     Public Function WI_GET_PROGRAM_EDCB() As String
+    '配信中の番組情報取得
+    Public Function WI_GET_PROGRAM_NUM(ByVal num As Integer) As String
