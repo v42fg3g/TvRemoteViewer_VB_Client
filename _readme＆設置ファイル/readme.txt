@@ -1,4 +1,4 @@
-TvRemoteViewer_VB_client 0.06
+TvRemoteViewer_VB_client 0.08
 
 TvRemoteViewer_VB 0.72以降に対応
 
@@ -32,8 +32,9 @@ HLS_option_ffmpeg_http.txt
 	0.05	ffmpegのHTTPストリームに対応
 	0.06	フォーム上にNHKMODE選択ボックスを配置
 		優先BonDriverが設定されているとフォーム上の選択を無視してしまうバグを修正
-
-
+	0.07	チャンネル切り替え時の安定性向上
+		ファイル再生にシークをテスト追加
+	0.08	一部の環境で視聴用VLCが起動したとたんに配信が終了してしまう現象に対処
 
 
 

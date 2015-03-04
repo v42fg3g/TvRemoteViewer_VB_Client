@@ -330,7 +330,7 @@
                     End If
                     'Debug.Print("[" & result2 & "]")
                     'If player(i).start_utime > 0 And (result2.IndexOf("no input") >= 0 Or result2.Length < 20 Or Val(result1) = 0) Then
-                    If player(i).start_utime > 0 And (result2.IndexOf("no input") >= 0 Or result2.Length < 20) Then
+                    If player(i).start_utime > 0 And (result2.IndexOf("no input") >= 0 Or result2.Length < 15) Then
                         'If result2.IndexOf("no input") >= 0 Or result2.Length < 20 Then
                         '再生されていない
                         log1write("VLCが閉じられたのでストリームを停止します")

@@ -2,7 +2,7 @@
     '================================================
     '共通で使用する変数
     '================================================
-    Public version As String = "TvRemoteViewer_VB_client v0.07"
+    Public version As String = "TvRemoteViewer_VB_client v0.08"
 
     Public time1_ng As Integer = 0
 
