@@ -1,14 +1,14 @@
+window_location = 279,259,640,746
 TextBoxServerIP=127.0.0.1:40003
 TextBoxServerUsername=
 TextBoxServerPassword=
 ComboBoxResolution=
-ComboBoxNHKMODE=0
+ComboBoxNHKMODE=0 Žå¥•›
 ComboBoxNum=1
-ComboBoxBonDriver=
-TextBoxChSpace=0
 ComboBoxBonDriver=
 TextBoxChSpace=
 ComboBoxServiceID=
 TextBoxVLCPATH=
 TextBoxVLCURL=
 TextBoxSuccessSecond=0
+TabControl1_SelectedIndex=5

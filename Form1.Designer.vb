@@ -67,6 +67,18 @@ Partial Class Form1
         Me.TabPage2 = New System.Windows.Forms.TabPage()
         Me.TabPage3 = New System.Windows.Forms.TabPage()
         Me.TabPage4 = New System.Windows.Forms.TabPage()
+        Me.Label22 = New System.Windows.Forms.Label()
+        Me.Label15 = New System.Windows.Forms.Label()
+        Me.Label20 = New System.Windows.Forms.Label()
+        Me.TextBoxSeek = New System.Windows.Forms.TextBox()
+        Me.Button16 = New System.Windows.Forms.Button()
+        Me.Button12 = New System.Windows.Forms.Button()
+        Me.Button13 = New System.Windows.Forms.Button()
+        Me.Button14 = New System.Windows.Forms.Button()
+        Me.Button15 = New System.Windows.Forms.Button()
+        Me.Button11 = New System.Windows.Forms.Button()
+        Me.Button10 = New System.Windows.Forms.Button()
+        Me.Button9 = New System.Windows.Forms.Button()
         Me.Label9 = New System.Windows.Forms.Label()
         Me.Label7 = New System.Windows.Forms.Label()
         Me.TextBoxFirstSeek = New System.Windows.Forms.TextBox()
@@ -93,18 +105,7 @@ Partial Class Form1
         Me.Column1 = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.DataGridView1 = New System.Windows.Forms.DataGridView()
         Me.Button5 = New System.Windows.Forms.Button()
-        Me.Button9 = New System.Windows.Forms.Button()
-        Me.Button10 = New System.Windows.Forms.Button()
-        Me.Button11 = New System.Windows.Forms.Button()
-        Me.Button12 = New System.Windows.Forms.Button()
-        Me.Button13 = New System.Windows.Forms.Button()
-        Me.Button14 = New System.Windows.Forms.Button()
-        Me.Button15 = New System.Windows.Forms.Button()
-        Me.Label15 = New System.Windows.Forms.Label()
-        Me.Label20 = New System.Windows.Forms.Label()
-        Me.TextBoxSeek = New System.Windows.Forms.TextBox()
-        Me.Button16 = New System.Windows.Forms.Button()
-        Me.Label22 = New System.Windows.Forms.Label()
+        Me.CheckBoxHardSub = New System.Windows.Forms.CheckBox()
         Me.TabControl1.SuspendLayout()
         Me.TabPage4.SuspendLayout()
         Me.TabPage5.SuspendLayout()
@@ -495,6 +496,7 @@ Partial Class Form1
         'TabPage4
         '
         Me.TabPage4.BackColor = System.Drawing.SystemColors.Control
+        Me.TabPage4.Controls.Add(Me.CheckBoxHardSub)
         Me.TabPage4.Controls.Add(Me.Label22)
         Me.TabPage4.Controls.Add(Me.Label15)
         Me.TabPage4.Controls.Add(Me.Label20)
@@ -523,6 +525,114 @@ Partial Class Form1
         Me.TabPage4.Size = New System.Drawing.Size(614, 636)
         Me.TabPage4.TabIndex = 3
         Me.TabPage4.Text = "　ファイル　"
+        '
+        'Label22
+        '
+        Me.Label22.AutoSize = True
+        Me.Label22.Location = New System.Drawing.Point(14, 164)
+        Me.Label22.Name = "Label22"
+        Me.Label22.Size = New System.Drawing.Size(165, 12)
+        Me.Label22.TabIndex = 156
+        Me.Label22.Text = "シーク　ffmpegでの配信のみ有効"
+        '
+        'Label15
+        '
+        Me.Label15.AutoSize = True
+        Me.Label15.Location = New System.Drawing.Point(36, 238)
+        Me.Label15.Name = "Label15"
+        Me.Label15.Size = New System.Drawing.Size(103, 12)
+        Me.Label15.TabIndex = 155
+        Me.Label15.Text = "シーク 動画冒頭から"
+        '
+        'Label20
+        '
+        Me.Label20.AutoSize = True
+        Me.Label20.Location = New System.Drawing.Point(184, 238)
+        Me.Label20.Name = "Label20"
+        Me.Label20.Size = New System.Drawing.Size(51, 12)
+        Me.Label20.TabIndex = 154
+        Me.Label20.Text = "秒地点へ"
+        '
+        'TextBoxSeek
+        '
+        Me.TextBoxSeek.Location = New System.Drawing.Point(147, 235)
+        Me.TextBoxSeek.Name = "TextBoxSeek"
+        Me.TextBoxSeek.Size = New System.Drawing.Size(35, 19)
+        Me.TextBoxSeek.TabIndex = 153
+        Me.TextBoxSeek.Text = "0"
+        '
+        'Button16
+        '
+        Me.Button16.Location = New System.Drawing.Point(241, 233)
+        Me.Button16.Name = "Button16"
+        Me.Button16.Size = New System.Drawing.Size(98, 23)
+        Me.Button16.TabIndex = 152
+        Me.Button16.TabStop = False
+        Me.Button16.Text = "ジャンプ"
+        Me.Button16.UseVisualStyleBackColor = True
+        '
+        'Button12
+        '
+        Me.Button12.Location = New System.Drawing.Point(201, 194)
+        Me.Button12.Name = "Button12"
+        Me.Button12.Size = New System.Drawing.Size(48, 23)
+        Me.Button12.TabIndex = 151
+        Me.Button12.Text = "-15"
+        Me.Button12.UseVisualStyleBackColor = True
+        '
+        'Button13
+        '
+        Me.Button13.Location = New System.Drawing.Point(147, 194)
+        Me.Button13.Name = "Button13"
+        Me.Button13.Size = New System.Drawing.Size(48, 23)
+        Me.Button13.TabIndex = 150
+        Me.Button13.Text = "-30"
+        Me.Button13.UseVisualStyleBackColor = True
+        '
+        'Button14
+        '
+        Me.Button14.Location = New System.Drawing.Point(92, 194)
+        Me.Button14.Name = "Button14"
+        Me.Button14.Size = New System.Drawing.Size(48, 23)
+        Me.Button14.TabIndex = 149
+        Me.Button14.Text = "-60"
+        Me.Button14.UseVisualStyleBackColor = True
+        '
+        'Button15
+        '
+        Me.Button15.Location = New System.Drawing.Point(38, 194)
+        Me.Button15.Name = "Button15"
+        Me.Button15.Size = New System.Drawing.Size(48, 23)
+        Me.Button15.TabIndex = 148
+        Me.Button15.Text = "-90"
+        Me.Button15.UseVisualStyleBackColor = True
+        '
+        'Button11
+        '
+        Me.Button11.Location = New System.Drawing.Point(456, 194)
+        Me.Button11.Name = "Button11"
+        Me.Button11.Size = New System.Drawing.Size(48, 23)
+        Me.Button11.TabIndex = 147
+        Me.Button11.Text = "+90"
+        Me.Button11.UseVisualStyleBackColor = True
+        '
+        'Button10
+        '
+        Me.Button10.Location = New System.Drawing.Point(402, 194)
+        Me.Button10.Name = "Button10"
+        Me.Button10.Size = New System.Drawing.Size(48, 23)
+        Me.Button10.TabIndex = 146
+        Me.Button10.Text = "+60"
+        Me.Button10.UseVisualStyleBackColor = True
+        '
+        'Button9
+        '
+        Me.Button9.Location = New System.Drawing.Point(347, 194)
+        Me.Button9.Name = "Button9"
+        Me.Button9.Size = New System.Drawing.Size(48, 23)
+        Me.Button9.TabIndex = 145
+        Me.Button9.Text = "+30"
+        Me.Button9.UseVisualStyleBackColor = True
         '
         'Label9
         '
@@ -811,113 +921,17 @@ Partial Class Form1
         Me.Button5.UseVisualStyleBackColor = True
         Me.Button5.Visible = False
         '
-        'Button9
+        'CheckBoxHardSub
         '
-        Me.Button9.Location = New System.Drawing.Point(347, 194)
-        Me.Button9.Name = "Button9"
-        Me.Button9.Size = New System.Drawing.Size(48, 23)
-        Me.Button9.TabIndex = 145
-        Me.Button9.Text = "+30"
-        Me.Button9.UseVisualStyleBackColor = True
-        '
-        'Button10
-        '
-        Me.Button10.Location = New System.Drawing.Point(402, 194)
-        Me.Button10.Name = "Button10"
-        Me.Button10.Size = New System.Drawing.Size(48, 23)
-        Me.Button10.TabIndex = 146
-        Me.Button10.Text = "+60"
-        Me.Button10.UseVisualStyleBackColor = True
-        '
-        'Button11
-        '
-        Me.Button11.Location = New System.Drawing.Point(456, 194)
-        Me.Button11.Name = "Button11"
-        Me.Button11.Size = New System.Drawing.Size(48, 23)
-        Me.Button11.TabIndex = 147
-        Me.Button11.Text = "+90"
-        Me.Button11.UseVisualStyleBackColor = True
-        '
-        'Button12
-        '
-        Me.Button12.Location = New System.Drawing.Point(201, 194)
-        Me.Button12.Name = "Button12"
-        Me.Button12.Size = New System.Drawing.Size(48, 23)
-        Me.Button12.TabIndex = 151
-        Me.Button12.Text = "-15"
-        Me.Button12.UseVisualStyleBackColor = True
-        '
-        'Button13
-        '
-        Me.Button13.Location = New System.Drawing.Point(147, 194)
-        Me.Button13.Name = "Button13"
-        Me.Button13.Size = New System.Drawing.Size(48, 23)
-        Me.Button13.TabIndex = 150
-        Me.Button13.Text = "-30"
-        Me.Button13.UseVisualStyleBackColor = True
-        '
-        'Button14
-        '
-        Me.Button14.Location = New System.Drawing.Point(92, 194)
-        Me.Button14.Name = "Button14"
-        Me.Button14.Size = New System.Drawing.Size(48, 23)
-        Me.Button14.TabIndex = 149
-        Me.Button14.Text = "-60"
-        Me.Button14.UseVisualStyleBackColor = True
-        '
-        'Button15
-        '
-        Me.Button15.Location = New System.Drawing.Point(38, 194)
-        Me.Button15.Name = "Button15"
-        Me.Button15.Size = New System.Drawing.Size(48, 23)
-        Me.Button15.TabIndex = 148
-        Me.Button15.Text = "-90"
-        Me.Button15.UseVisualStyleBackColor = True
-        '
-        'Label15
-        '
-        Me.Label15.AutoSize = True
-        Me.Label15.Location = New System.Drawing.Point(36, 238)
-        Me.Label15.Name = "Label15"
-        Me.Label15.Size = New System.Drawing.Size(103, 12)
-        Me.Label15.TabIndex = 155
-        Me.Label15.Text = "シーク 動画冒頭から"
-        '
-        'Label20
-        '
-        Me.Label20.AutoSize = True
-        Me.Label20.Location = New System.Drawing.Point(184, 238)
-        Me.Label20.Name = "Label20"
-        Me.Label20.Size = New System.Drawing.Size(51, 12)
-        Me.Label20.TabIndex = 154
-        Me.Label20.Text = "秒地点へ"
-        '
-        'TextBoxSeek
-        '
-        Me.TextBoxSeek.Location = New System.Drawing.Point(147, 235)
-        Me.TextBoxSeek.Name = "TextBoxSeek"
-        Me.TextBoxSeek.Size = New System.Drawing.Size(35, 19)
-        Me.TextBoxSeek.TabIndex = 153
-        Me.TextBoxSeek.Text = "0"
-        '
-        'Button16
-        '
-        Me.Button16.Location = New System.Drawing.Point(241, 233)
-        Me.Button16.Name = "Button16"
-        Me.Button16.Size = New System.Drawing.Size(98, 23)
-        Me.Button16.TabIndex = 152
-        Me.Button16.TabStop = False
-        Me.Button16.Text = "ジャンプ"
-        Me.Button16.UseVisualStyleBackColor = True
-        '
-        'Label22
-        '
-        Me.Label22.AutoSize = True
-        Me.Label22.Location = New System.Drawing.Point(14, 164)
-        Me.Label22.Name = "Label22"
-        Me.Label22.Size = New System.Drawing.Size(165, 12)
-        Me.Label22.TabIndex = 156
-        Me.Label22.Text = "シーク　ffmpegでの配信のみ有効"
+        Me.CheckBoxHardSub.AutoSize = True
+        Me.CheckBoxHardSub.Checked = True
+        Me.CheckBoxHardSub.CheckState = System.Windows.Forms.CheckState.Checked
+        Me.CheckBoxHardSub.Location = New System.Drawing.Point(378, 104)
+        Me.CheckBoxHardSub.Name = "CheckBoxHardSub"
+        Me.CheckBoxHardSub.Size = New System.Drawing.Size(72, 16)
+        Me.CheckBoxHardSub.TabIndex = 157
+        Me.CheckBoxHardSub.Text = "ハードサブ"
+        Me.CheckBoxHardSub.UseVisualStyleBackColor = True
         '
         'Form1
         '
@@ -1032,5 +1046,6 @@ Partial Class Form1
     Friend WithEvents Button10 As System.Windows.Forms.Button
     Friend WithEvents Button9 As System.Windows.Forms.Button
     Friend WithEvents Label22 As System.Windows.Forms.Label
+    Friend WithEvents CheckBoxHardSub As System.Windows.Forms.CheckBox
 
 End Class

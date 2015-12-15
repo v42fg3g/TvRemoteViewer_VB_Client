@@ -1,4 +1,4 @@
-TvRemoteViewer_VB_client 0.08
+TvRemoteViewer_VB_client 0.09
 
 TvRemoteViewer_VB 0.72以降に対応
 
@@ -35,7 +35,9 @@ HLS_option_ffmpeg_http.txt
 	0.07	チャンネル切り替え時の安定性向上
 		ファイル再生にシークをテスト追加
 	0.08	一部の環境で視聴用VLCが起動したとたんに配信が終了してしまう現象に対処
-
+	0.09	標準の文字コードをUTF-8に変更
+		サーバーへの配信指令を2パスから1パス仕様に変更(WatchTV%NUM%.htmlへ直接)
+		チャンネル切り替え時のタイムアウトを緩和
 
 
 
@@ -48,7 +50,6 @@ HLS_option_ffmpeg_http.txt
 
 例：WI_GET_CHANNELS.htmlにアクセスするとWI_GET_CHANNELS()が呼び出され結果が返されます
 　　現在実装されているインターフェースは以下の通りです
-
 
     '配信スタート
     Public Function WI_START_STREAM(ByVal num As Integer, ByVal BonDriver As String, ByVal ServiceID As Integer, ByVal chspace As Integer, ByVal resolution As String, ByVal NHKMODE As Integer, ByVal stream_mode As Integer, ByVal VideoFilename As String) As String

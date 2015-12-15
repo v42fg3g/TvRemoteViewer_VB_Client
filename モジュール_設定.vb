@@ -2,11 +2,16 @@
     '================================================
     '共通で使用する変数
     '================================================
-    Public version As String = "TvRemoteViewer_VB_client v0.08"
+    Public version As String = "TvRemoteViewer_VB_client v0.09"
+
+    '2パス再生=0 1パス再生=1
+    Public direct_WatchTV As Integer = 0
 
     Public time1_ng As Integer = 0
 
     Public TvRemoteViewer_VB_client_start As Integer = 0 '無事起動したときに１になる
+
+    Public NoHardSub As Integer = 0 '初期設定はハードサブ有り=0
 
     'TvRemoteViewer_VBのＩＤとパスワード
     Public M_username As String = ""

@@ -1,4 +1,4 @@
-TvRemoteViewer_VB_client 0.05
+TvRemoteViewer_VB_client 0.09
 
 TvRemoteViewer_VB 0.72以降に対応
 
@@ -30,19 +30,26 @@ HLS_option_ffmpeg_http.txt
 		ユーザーインターフェースの修正
 		優先BonDriverの指定をiniに追加
 	0.05	ffmpegのHTTPストリームに対応
+	0.06	フォーム上にNHKMODE選択ボックスを配置
+		優先BonDriverが設定されているとフォーム上の選択を無視してしまうバグを修正
+	0.07	チャンネル切り替え時の安定性向上
+		ファイル再生にシークをテスト追加
+	0.08	一部の環境で視聴用VLCが起動したとたんに配信が終了してしまう現象に対処
+	0.09	標準の文字コードをUTF-8に変更
+		サーバーへの配信指令を2パスから1パス仕様に変更(WatchTV%NUM%.htmlへ直接)
+		チャンネル切り替え時のタイムアウトを緩和
 
 
 
 
 
 
+■WEBインターフェース一覧
+ブラウザまはプログラム中からサーバーにWEBアクセスすることで各種命令＆情報取得ができます。
+「サーバー」タブで動作を試すことができます
 
-
-
-
-WEBインターフェース一覧
-「サーバー」タブ参照のこと
-サーバーにWEBアクセスすることで各種命令＆情報取得ができます。
+例：WI_GET_CHANNELS.htmlにアクセスするとWI_GET_CHANNELS()が呼び出され結果が返されます
+　　現在実装されているインターフェースは以下の通りです
 
     '配信スタート
     Public Function WI_START_STREAM(ByVal num As Integer, ByVal BonDriver As String, ByVal ServiceID As Integer, ByVal chspace As Integer, ByVal resolution As String, ByVal NHKMODE As Integer, ByVal stream_mode As Integer, ByVal VideoFilename As String) As String
@@ -75,3 +82,5 @@ WEBインターフェース一覧
     Public Function WI_GET_PROGRAM_D() As String
     Public Function WI_GET_PROGRAM_TVROCK() As String
     Public Function WI_GET_PROGRAM_EDCB() As String
+    '配信中の番組情報取得
+    Public Function WI_GET_PROGRAM_NUM(ByVal num As Integer) As String

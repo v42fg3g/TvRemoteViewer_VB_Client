@@ -5,7 +5,7 @@ Imports System.IO
 
 Module モジュール_WEBインターフェース
     'TvRemoteViewer_VB WEBインターフェースへの窓口
-    Public Function GET_HTML_REPLY(ByVal url As String, ByVal para As String, Optional ByVal enc_str As String = "Shift_JIS") As String
+    Public Function GET_HTML_REPLY(ByVal url As String, ByVal para As String, Optional ByVal enc_str As String = "UTF-8") As String
         Dim r As String = ""
 
         'パラメーターをurlに追加
@@ -51,6 +51,7 @@ Module モジュール_WEBインターフェース
     Public Function WI_START_STREAM(ByVal num As Integer, ByVal BonDriver As String, ByVal ServiceID As Integer, ByVal chspace As Integer, ByVal resolution As String, ByVal NHKMODE As Integer, ByVal stream_mode As Integer, ByVal VideoFilename As String, ByVal SeekSeconds As Integer) As String
         'TvRemoteViewer_VB->WebRemocon.vb->Web_Start
         Dim r As String = ""
+
         Dim para As String = ""
 
         para &= "num=" & num.ToString & "&"
@@ -61,6 +62,7 @@ Module モジュール_WEBインターフェース
         para &= "NHKMODE=" & NHKMODE.ToString & "&"
         para &= "StreamMode=" & stream_mode.ToString & "&"
         para &= "VideoSeekSeconds=" & SeekSeconds.ToString & "&"
+        para &= "nohsub=" & NoHardSub.ToString & "&"
 
         Dim VideoFullpathFileName As String = VideoFilename
         ''なぜかそのまま渡すと返ってきたときに文字化けするのでURLエンコードしておく
@@ -68,7 +70,12 @@ Module モジュール_WEBインターフェース
         'Dim VideoFullpathFileName_enc As String = VideoFullpathFileName 'エンコしなくてもおｋになったはずだがしてもおｋ
         para &= "VideoName=" & VideoFullpathFileName_enc
 
-        r = GET_HTML_REPLY(M_TVRV_URL & "WI_START_STREAM.html", para, "Shift_JIS")
+        If direct_WatchTV = 0 Then
+            r = GET_HTML_REPLY(M_TVRV_URL & "WI_START_STREAM.html", para, "UTF-8")
+        Else
+            'パラメーター文字列を返す
+            r = para
+        End If
 
         Return r
     End Function
@@ -79,7 +86,7 @@ Module モジュール_WEBインターフェース
         Dim r As String = ""
         Dim para As String = ""
         para = "num=" & num.ToString
-        r = GET_HTML_REPLY(M_TVRV_URL & "WI_STOP_STREAM.html", para, "Shift_JIS")
+        r = GET_HTML_REPLY(M_TVRV_URL & "WI_STOP_STREAM.html", para, "UTF-8")
         Return r
     End Function
 

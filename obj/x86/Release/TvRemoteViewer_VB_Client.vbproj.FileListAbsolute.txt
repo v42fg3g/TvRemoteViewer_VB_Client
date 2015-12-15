@@ -8,3 +8,13 @@ d:\my documents\visual studio 2010\Projects\TvRemoteViewer_VB_Client\obj\x86\Rel
 d:\my documents\visual studio 2010\Projects\TvRemoteViewer_VB_Client\obj\x86\Release\TvRemoteViewer_VB_Client.xml
 d:\my documents\visual studio 2010\Projects\TvRemoteViewer_VB_Client\obj\x86\Release\TvRemoteViewer_VB_Client.pdb
 D:\My Documents\Visual Studio 2010\Projects\TvRemoteViewer_VB_Client\bin\Release\TvRemoteViewer_VB_Client.exe.config
+D:\My Documents\Visual Studio 2010\Projects\TvRemoteViewer_VB_Client - コピー_VLCリモート失敗\bin\Release\TvRemoteViewer_VB_Client.exe.config
+D:\My Documents\Visual Studio 2010\Projects\TvRemoteViewer_VB_Client - コピー_VLCリモート失敗\bin\Release\TvRemoteViewer_VB_Client.exe
+D:\My Documents\Visual Studio 2010\Projects\TvRemoteViewer_VB_Client - コピー_VLCリモート失敗\bin\Release\TvRemoteViewer_VB_Client.pdb
+D:\My Documents\Visual Studio 2010\Projects\TvRemoteViewer_VB_Client - コピー_VLCリモート失敗\bin\Release\TvRemoteViewer_VB_Client.xml
+D:\My Documents\Visual Studio 2010\Projects\TvRemoteViewer_VB_Client - コピー_VLCリモート失敗\obj\x86\Release\TvRemoteViewer_VB_Client.Form1.resources
+D:\My Documents\Visual Studio 2010\Projects\TvRemoteViewer_VB_Client - コピー_VLCリモート失敗\obj\x86\Release\TvRemoteViewer_VB_Client.Resources.resources
+D:\My Documents\Visual Studio 2010\Projects\TvRemoteViewer_VB_Client - コピー_VLCリモート失敗\obj\x86\Release\TvRemoteViewer_VB_Client.vbproj.GenerateResource.Cache
+D:\My Documents\Visual Studio 2010\Projects\TvRemoteViewer_VB_Client - コピー_VLCリモート失敗\obj\x86\Release\TvRemoteViewer_VB_Client.exe
+D:\My Documents\Visual Studio 2010\Projects\TvRemoteViewer_VB_Client - コピー_VLCリモート失敗\obj\x86\Release\TvRemoteViewer_VB_Client.xml
+D:\My Documents\Visual Studio 2010\Projects\TvRemoteViewer_VB_Client - コピー_VLCリモート失敗\obj\x86\Release\TvRemoteViewer_VB_Client.pdb

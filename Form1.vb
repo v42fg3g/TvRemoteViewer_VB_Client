@@ -328,7 +328,6 @@
                             log1write("player_start(" & i & ")=" & Now())
                         End If
                     End If
-                    'Debug.Print("[" & result2 & "]")
                     'If player(i).start_utime > 0 And (result2.IndexOf("no input") >= 0 Or result2.Length < 20 Or Val(result1) = 0) Then
                     If player(i).start_utime > 0 And (result2.IndexOf("no input") >= 0 Or result2.Length < 15) Then
                         'If result2.IndexOf("no input") >= 0 Or result2.Length < 20 Then
@@ -339,7 +338,7 @@
                         'サーバーに停止命令を送る
                         stop_stream(i)
                         log1write("VLCが閉じられたのでストリームを停止しました[1]")
-                    ElseIf player(i).start_utime > 0 And time2unix(Now()) - player(i).start_utime > 3 Then
+                    ElseIf player(i).start_utime > 0 And time2unix(Now()) - player(i).start_utime > 7 Then
                         If Second(Now()) Mod 5 = 0 Then
                             '5秒に一度チェック
                             Dim result3 As String = Trim(VLC_remote("stats", VLC_rc_port + i - 1))
@@ -560,6 +559,13 @@
                                     End Try
                                 End If
                             End If
+                        Case "NoHardSub"
+                            NoHardSub = Val(lr(1))
+                            If NoHardSub = 1 Then
+                                CheckBoxHardSub.Checked = False
+                            Else
+                                CheckBoxHardSub.Checked = True
+                            End If
                     End Select
                 End If
             Next
@@ -598,6 +604,7 @@
         s &= "TabControl1_SelectedIndex=" & TabControl1.SelectedIndex & vbCrLf
         s &= "TextBoxSeek=" & TextBoxSeek.Text.ToString & vbCrLf
         s &= "TextBoxFirstSeek=" & TextBoxFirstSeek.Text.ToString & vbCrLf
+        s &= "NoHardSub=" & NoHardSub & vbCrLf
 
         'カレントディレクトリ変更
         F_set_ppath4program()
@@ -803,41 +810,52 @@
         '稼働中ナンバー
         show_LabelStream() '現在稼働中のプロセスを表示
 
-        If response.IndexOf("開始されました<br>") > 0 Then
-            '指定秒数配信成功していればVLC起動
-            Dim success As Integer = Val(TextBoxSuccessSecond.Text.ToString) '秒数
-            Dim success_count As Integer = 0
-            Dim count As Integer = 30
-            While count > 0
-                Dim error_numbers As String = WI_GET_ERROR_STREAM()
-                If error_numbers.IndexOf(":" & num.ToString & ":") < 0 Then
-                    '成功している
-                    log1write("成功")
-                    success_count += 1
-                    If success_count >= success Then
-                        '規定秒数に達した
-                        Exit While
+        If direct_WatchTV = 0 Then
+            If response.IndexOf("開始されました<br>") > 0 Then
+                '指定秒数配信成功していればVLC起動
+                Dim success As Integer = Val(TextBoxSuccessSecond.Text.ToString) '秒数
+                Dim success_count As Integer = 0
+                Dim count As Integer = 30
+                While count > 0
+                    Dim error_numbers As String = WI_GET_ERROR_STREAM()
+                    If error_numbers.IndexOf(":" & num.ToString & ":") < 0 Then
+                        '成功している
+                        log1write("成功")
+                        success_count += 1
+                        If success_count >= success Then
+                            '規定秒数に達した
+                            Exit While
+                        End If
+                    Else
+                        log1write("再起動中")
+                        success_count = 0
+                    End If
+                    System.Threading.Thread.Sleep(1000)
+                    count -= 1
+                End While
+
+                If count > 0 Then
+                    'あらかじめVLCを起動しておく
+                    view_by_VLC(num, fullpathfilename, SeekSeconds)
+
+                    If SeekSeconds = 0 Then
+                        log1write("配信が開始されました")
+                    Else
+                        log1write("動画冒頭から" & SeekSeconds & "秒の地点から配信が開始されました")
                     End If
                 Else
-                    log1write("再起動中")
-                    success_count = 0
-                End If
-                System.Threading.Thread.Sleep(1000)
-                count -= 1
-            End While
-
-            If count > 0 Then
-                'あらかじめVLCを起動しておく
-                view_by_VLC(num, fullpathfilename, SeekSeconds)
-
-                If SeekSeconds = 0 Then
-                    log1write("配信が開始されました")
-                Else
-                    log1write("動画冒頭から" & SeekSeconds & "秒の地点から配信が開始されました")
+                    'いつまで経っても配信が開始されない
+                    log1write("いつまで経っても配信が開始されません")
                 End If
             Else
-                'いつまで経っても配信が開始されない
-                log1write("いつまで経っても配信が開始されません")
+                log1write("【エラー】配信開始が確認できませんでした")
+            End If
+        ElseIf direct_WatchTV = 1 And response.Length > 0 Then
+            If response.Length > 0 Then
+                log1write("VLCによるダイレクト視聴を開始しました")
+                view_by_VLC(num, fullpathfilename, 0, response)
+            Else
+                log1write("【エラー】VLCへのパラメーターが指定されていません")
             End If
         End If
 
@@ -967,12 +985,19 @@
     End Sub
 
     'VLCで視聴
-    Private Sub view_by_VLC(ByVal num As Integer, ByVal fullpathfilename As String, ByVal SeekSeconds As Integer)
+    Private Sub view_by_VLC(ByVal num As Integer, ByVal fullpathfilename As String, ByVal SeekSeconds As Integer, Optional ByVal para_str As String = "")
         Dim vlc_path As String = TextBoxVLCPATH.Text.ToString
         Dim vlc_url As String = TextBoxVLCURL.Text.ToString()
 
         'パスワードがあればVLC_URLに追加
         vlc_url = add_userpass2url(vlc_url, M_username, M_password)
+        If para_str.Length > 0 Then
+            If vlc_url.IndexOf("?") < 0 Then
+                vlc_url &= "?" & para_str
+            Else
+                vlc_url &= "&" & para_str
+            End If
+        End If
 
         Dim rc_port As Integer = VLC_rc_port + num - 1 'VLC listen port
 
@@ -1586,4 +1611,13 @@
 
         End If
     End Sub
+
+    Private Sub CheckBoxHardSub_CheckedChanged(sender As System.Object, e As System.EventArgs) Handles CheckBoxHardSub.CheckedChanged
+        If CheckBoxHardSub.Checked = True Then
+            NoHardSub = 0
+        Else
+            NoHardSub = 1
+        End If
+    End Sub
+
 End Class
