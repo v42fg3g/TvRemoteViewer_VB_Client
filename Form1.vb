@@ -216,6 +216,12 @@
                 show_TvProgram(999)
         End Select
 
+        'VLCならば1パス視聴開始は無効にする
+        If S_HTTPSTREAM_App = 1 And direct_WatchTV = 1 Then
+            direct_WatchTV = 0
+            log1write("【2パス再生】サーバーのHTTP配信アプリがVLCなので1パス再生は出来ません。2パス再生に変更しました")
+        End If
+
         Timer1.Enabled = True
     End Sub
 
@@ -987,7 +993,7 @@
     'VLCで視聴
     Private Sub view_by_VLC(ByVal num As Integer, ByVal fullpathfilename As String, ByVal SeekSeconds As Integer, Optional ByVal para_str As String = "")
         Dim vlc_path As String = TextBoxVLCPATH.Text.ToString
-        Dim vlc_url As String = TextBoxVLCURL.Text.ToString()
+        Dim vlc_url As String = TextBoxVLCURL.Text.ToString() 'フォーム上の設定タブにVLCでアクセスすべきURLが作成されている・・なんだかなぁ
 
         'パスワードがあればVLC_URLに追加
         vlc_url = add_userpass2url(vlc_url, M_username, M_password)

@@ -1,4 +1,4 @@
-TvRemoteViewer_VB_client 0.09
+TvRemoteViewer_VB_client 0.10
 
 TvRemoteViewer_VB 0.72以降に対応
 
@@ -38,3 +38,4 @@ HLS_option_ffmpeg_http.txt
 	0.09	標準の文字コードをUTF-8に変更
 		サーバーへの配信指令を2パスから1パス仕様に変更(WatchTV%NUM%.htmlへ直接)
 		チャンネル切り替え時のタイムアウトを緩和
+	0.10	サーバー側のHTTP配信アプリがVLCの場合は従来の間接配信するようにした

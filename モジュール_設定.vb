@@ -2,10 +2,10 @@
     '================================================
     '共通で使用する変数
     '================================================
-    Public version As String = "TvRemoteViewer_VB_client v0.09"
+    Public version As String = "TvRemoteViewer_VB_client v0.10"
 
     '2パス再生=0 1パス再生=1
-    Public direct_WatchTV As Integer = 0
+    Public direct_WatchTV As Integer = 1
 
     Public time1_ng As Integer = 0
 
