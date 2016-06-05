@@ -493,13 +493,13 @@
         Dim html As String = S_BonDriver_Channel_str
         ComboBoxBonDriver.Items.Add("---")
 
-        Dim sp As Integer = html.IndexOf("[bondriver")
+        Dim sp As Integer = html.ToLower.IndexOf("[bondriver")
         While sp >= 0
             Dim b As String = Instr_pickup(html, "[", "]", sp)
-            If b.IndexOf("bondriver") >= 0 Then
+            If b.ToLower.IndexOf("bondriver") >= 0 Then
                 ComboBoxBonDriver.Items.Add(b)
             End If
-            sp = html.IndexOf("[bondriver", sp + 1)
+            sp = html.ToLower.IndexOf("[bondriver", sp + 1)
         End While
         If ComboBoxBonDriver.Text.Length = 0 Then
             Try

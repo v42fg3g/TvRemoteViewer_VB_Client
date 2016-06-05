@@ -1,4 +1,4 @@
-TvRemoteViewer_VB_client 0.10
+TvRemoteViewer_VB_client 0.11
 
 TvRemoteViewer_VB 0.72以降に対応
 
@@ -39,3 +39,4 @@ HLS_option_ffmpeg_http.txt
 		サーバーへの配信指令を2パスから1パス仕様に変更(WatchTV%NUM%.htmlへ直接)
 		チャンネル切り替え時のタイムアウトを緩和
 	0.10	サーバー側のHTTP配信アプリがVLCの場合は従来の間接配信するようにした
+	0.11	BonDriverの大文字小文字を保持するようにした（配信開始に失敗していた）
